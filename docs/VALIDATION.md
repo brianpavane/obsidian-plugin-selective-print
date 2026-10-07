@@ -39,6 +39,7 @@ here from Brian's reports.
 | Diagnostics report contains no note content                                                                        | M5              | automated                                                                                                        | `test/diagnostics.test.ts`                                                          |
 | Whole core pipeline on a 12k-line note in < 1 s                                                                    | M5              | automated                                                                                                        | `test/job.test.ts` (Node; rendering time in Obsidian is logged with Debug logging)  |
 | Reload / disable-enable without duplicate icons or leaked frames: QA item 11                                       | M5              | **unverified**                                                                                                   | Gate E                                                                              |
+| Dark Obsidian theme prints light (Neutral style), print and PDF: part of QA item 5                                 | M2              | manual-verified on Obsidian 1.14.4 / macOS 26.7                                                                  | Brian, 2026-10-07: uses dark mode; printouts and PDFs reported good                 |
 | Header/footer labels, escaping, margin boxes, PDF templates                                                        | 0.5.0           | automated                                                                                                        | `test/header-footer.test.ts`, `test/output.test.ts`                                 |
 | Header and footer on printouts (CSS page-margin boxes): QA item 13                                                 | 0.5.0           | manual-verified on Obsidian 1.14.4 / macOS 26.7                                                                  | Brian, 2026-10-07 ("The header/footer are good")                                    |
 | Header and footer on PDFs (Electron templates): QA item 13                                                         | 0.5.0           | manual-verified on Obsidian 1.14.4 / macOS 26.7                                                                  | Brian, 2026-10-07 ("The header/footer are good")                                    |
@@ -48,12 +49,13 @@ here from Brian's reports.
 
 ## Manual QA log
 
-| Date       | Obsidian | macOS | Plugin | Item                                 | Result                                                       |
-| ---------- | -------- | ----- | ------ | ------------------------------------ | ------------------------------------------------------------ |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.6.0  | Header and footer                    | "The header/footer are good"                                 |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.6.0  | Packs and 0.6.0 overall              | "This is working as it should be" (general)                  |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.3.1  | PDF Save panel on the Desktop        | pass                                                         |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.3.0  | One-click PDF                        | pass (format good); saved next to the note, change requested |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.2.0  | Gate C try-list and decisions        | "All good to me" (general; items not reported one by one)    |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.1.0  | Print works; skip empty on/off works | pass                                                         |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.0.1  | Spike A1-A3                          | pass (reported as "seemed to work, at least through A3")     |
+| Date       | Obsidian | macOS | Plugin | Item                                 | Result                                                                            |
+| ---------- | -------- | ----- | ------ | ------------------------------------ | --------------------------------------------------------------------------------- |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.6.0  | Dark theme prints light              | "I'm in dark mode, so I assume that is good" (all his prints were from dark mode) |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.6.0  | Header and footer                    | "The header/footer are good"                                                      |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.6.0  | Packs and 0.6.0 overall              | "This is working as it should be" (general)                                       |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.3.1  | PDF Save panel on the Desktop        | pass                                                                              |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.3.0  | One-click PDF                        | pass (format good); saved next to the note, change requested                      |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.2.0  | Gate C try-list and decisions        | "All good to me" (general; items not reported one by one)                         |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.1.0  | Print works; skip empty on/off works | pass                                                                              |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.0.1  | Spike A1-A3                          | pass (reported as "seemed to work, at least through A3")                          |
