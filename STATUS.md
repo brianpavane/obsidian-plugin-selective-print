@@ -39,6 +39,11 @@ reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
 
+- 2026-10-07, Brian: Gate C closed ("All good to me") in reply to the Gate C list and
+  decisions. Approved: `preset-version: 1` is now **frozen** (changes need a migration and a
+  gate); the starter matcher deviation (only "Meeting notes" matches `type: meeting`). Starter
+  heading names were not separately confirmed; they stay marked "verified against README".
+
 - 2026-10-07, Claude (pending Brian at Gate C): "Meeting recap" and "Meeting full (with
   transcript)" ship **without** the `type = meeting` matcher that SPEC section 4 lists. With
   three equally specific matches, the alphabetical first ("Meeting full") would be the
