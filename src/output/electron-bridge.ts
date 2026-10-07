@@ -3,7 +3,7 @@
  * capability-detected: Electron `remote` is deprecated upstream and may disappear in any
  * Obsidian release, so callers must handle `ok: false` and fall back to the Print adapter.
  *
- * Used by "Show diagnostics" (capabilities, in-memory probe) and by the PDF adapter (M4):
+ * Used by diagnostics (capability detection) and by the PDF adapter (M4):
  * a hidden BrowserWindow with JavaScript disabled renders a local HTML file to PDF.
  */
 
@@ -135,37 +135,6 @@ export function detectElectronCapabilities(): ElectronCapabilities {
   if (!caps.printToPDF) caps.problems.push("webContents.printToPDF is not available");
 
   return caps;
-}
-
-export interface PrintToPdfProbe {
-  ok: boolean;
-  /** Size of the generated PDF in bytes. The bytes are discarded, never written. */
-  bytes?: number;
-  /** True when the result starts with `%PDF-`. */
-  pdfHeader?: boolean;
-  error?: string;
-}
-
-/**
- * Spike B probe: ask the current window's webContents for a PDF in memory and check
- * the header. Nothing is written to disk and no window is created.
- */
-export async function probePrintToPdf(): Promise<PrintToPdfProbe> {
-  const req = getRequire();
-  if (!req) return { ok: false, error: "window.require is not available" };
-  const { remote } = getRemote(req);
-  if (!remote) return { ok: false, error: 'Electron "remote" is unavailable' };
-  try {
-    const wc = remote.getCurrentWebContents?.();
-    if (typeof wc?.printToPDF !== "function") {
-      return { ok: false, error: "webContents.printToPDF is not available" };
-    }
-    const data = await wc.printToPDF({});
-    const header = String.fromCharCode(...Array.from(data.subarray(0, 5)));
-    return { ok: true, bytes: data.byteLength, pdfHeader: header === "%PDF-" };
-  } catch (err) {
-    return { ok: false, error: String(err) };
-  }
 }
 
 /** Whether one-click PDF can run: `remote.BrowserWindow` must be a constructor. */

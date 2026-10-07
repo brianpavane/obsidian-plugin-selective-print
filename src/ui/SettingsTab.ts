@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import { DEFAULT_GLOBAL_EXCLUDE } from "../constants";
 import { validateRuleEntry } from "../core/selection";
+import { copyDiagnostics } from "../obsidian/diagnostics";
 import { vaultFolderPath } from "../obsidian/vault-presets";
 import { renderFilename } from "../core/filename";
 import type { OutputFormat, Orientation, PaperSize, PdfDestination, PrintStyle } from "../settings";
@@ -246,6 +247,17 @@ export class SettingsTab extends PluginSettingTab {
         await this.plugin.saveSettings();
       }),
     );
+    new Setting(containerEl)
+      .setName("Diagnostics")
+      .setDesc(
+        "Versions, capabilities, presets and settings for a bug report. Contains no note content.",
+      )
+      .addButton((b) =>
+        b.setButtonText("Copy diagnostics").onClick(async () => {
+          const text = await this.plugin.diagnosticsText();
+          if (text !== null) await copyDiagnostics(text);
+        }),
+      );
     new Setting(containerEl)
       .setName("Debug logging")
       .setDesc("Write detailed logs to the developer console.")

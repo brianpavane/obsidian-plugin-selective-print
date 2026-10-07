@@ -233,13 +233,26 @@ export default class SelectivePrintPlugin extends Plugin {
     }
   }
 
-  private async showDiagnostics(): Promise<void> {
+  /** Diagnostics report text; null (with a notice) when it cannot be built. */
+  async diagnosticsText(): Promise<string | null> {
     try {
-      const text = await buildDiagnostics(this.app, this.manifest.version);
-      new DiagnosticsModal(this.app, text).open();
+      return await buildDiagnostics(
+        this.manifest.version,
+        this.settings,
+        this.adapters,
+        this.store,
+      );
     } catch (err) {
       this.log.error("diagnostics failed", err);
-      new Notice(`${PLUGIN_NAME}: diagnostics failed: ${String(err)}`);
+      new Notice(
+        `${PLUGIN_NAME}: diagnostics failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      return null;
     }
+  }
+
+  private async showDiagnostics(): Promise<void> {
+    const text = await this.diagnosticsText();
+    if (text !== null) new DiagnosticsModal(this.app, text).open();
   }
 }
