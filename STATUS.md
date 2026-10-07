@@ -1,6 +1,6 @@
 # STATUS
 
-- Version: 0.3.0 Pass: 4 Milestone: M4 complete
+- Version: 0.3.1 Pass: 4 Milestone: M4 complete
 - Gate: D State: **open: waiting on Brian**
 
 ## Done
@@ -19,11 +19,11 @@ Nothing. Stopped at Gate D.
 
 ## Waiting on Brian
 
-1. Update to 0.3.0 and try the Gate D list in `docs/MANUAL_QA.md` (5 items). Most important:
-   did one-click PDF save a file, or did it fall back to the print dialog? This answers the
-   old Spike B question.
-2. Is the fallback message clear?
-3. Decide: keep "Open PDF after saving"?
+Reported 2026-10-07 on 0.3.0: one-click PDF works ("The PDF is of good format"), but it saved
+next to the note; it should go to the Desktop or ask. Fixed in 0.3.1.
+
+1. Update to 0.3.1 and check where the PDF goes (Gate D list in `docs/MANUAL_QA.md`).
+2. Decide: keep "Open PDF after saving"?
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -36,6 +36,15 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian: one-click PDFs should go to the Desktop or ask where to save, not next to
+  the note. This deviates from SPEC 3.6 ("write to the configured vault folder") and allows
+  writing **outside the vault** (CLAUDE.md section 5), at Brian's request. Implemented as
+  "Save PDF files to": Ask (default, Save panel on the Desktop) / Desktop / The vault. Files
+  outside the vault are written only to the Desktop or to a path the user picked in the Save
+  panel.
+- 2026-10-07, Brian (Spike B answered): Electron `remote`, `BrowserWindow` and `printToPDF`
+  work on Obsidian 1.14.4 / macOS 26.7.
 
 - 2026-10-07, Claude: the PDF adapter's temporary HTML file is written inside the vault, in the
   plugin folder (`.obsidian/plugins/selective-print/.print-tmp-*.html`), not the system temp
@@ -99,8 +108,8 @@ reserved), preset fields fall back to settings, and the filename rules.
 ## Known issues
 
 - Unverified on macOS (Gate B): everything in M2 except the iframe print path itself.
-- One-click PDF depends on Electron `remote`, which is deprecated upstream and still
-  unverified on Obsidian 1.14.4. The fallback is automatic.
+- One-click PDF depends on Electron `remote`, which is deprecated upstream. It works on
+  Obsidian 1.14.4; a future Obsidian may drop it, and then the automatic fallback applies.
 - PDF: remote (http) images are not inlined; the PDF window loads them as Obsidian does.
 - Whether `afterprint` fires on Cancel is unknown (spike A4 was waived). Mitigation: each new
   print cleans up the previous print frame, and a 5-minute timer is the fallback.

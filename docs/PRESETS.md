@@ -33,7 +33,10 @@ inline-markers: true # honor %% print:exclude %% blocks
 output:
   paper: letter # letter | a4; omit to use the setting
   orientation: portrait # portrait | landscape; omit to use the setting
-  # format, pdf-folder, filename and footer are accepted now and used from 0.3.0 / 1.1
+  format: pdf # print | pdf; omit to use the setting
+  pdf-folder: Exports # vault folder for one-click PDFs; overrides "Save PDF files to"
+  filename: "{date} - {title}" # PDF file name template; omit to use the setting
+  # footer is accepted now and used from 1.1
 ---
 ```
 

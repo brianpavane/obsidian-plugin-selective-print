@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-07
+
+### Changed
+
+- One-click PDFs no longer go next to the note by default. New setting **Save PDF files to**:
+  - **Ask where to save** (default): the macOS Save panel opens on the Desktop with the file
+    name filled in; it asks before replacing a file.
+  - **Desktop**: saved there directly; never overwrites (` (2)`).
+  - **The vault**: the previous behavior (PDF folder, or next to the note).
+
+  A preset with its own `pdf-folder` still saves into the vault.
+
+- Cancelling the Save panel cancels quietly; it does not open the print dialog.
+
 ## [0.3.0] - 2026-10-07
 
 One-click PDF (M4). Not yet confirmed on macOS by the owner; see the release notes.

@@ -57,10 +57,18 @@ presets**.
 Run **Save current note as PDF**, or choose **PDF** in the dialog's **Output** menu. You can
 also set **Default output** to PDF in settings so that the header icon saves PDFs.
 
-- The file goes next to the note, or into the **PDF folder** from settings or the preset.
-- It is named by the **PDF file name** template (default `{date} - {title}`).
-- Existing files are never overwritten: a second save adds ` (2)`.
-- **Open PDF after saving** opens the new file in your PDF app.
+Where the file goes depends on **Save PDF files to** in settings:
+
+- **Ask where to save** (default): the macOS Save panel opens on your Desktop with the file
+  name filled in. Pick any folder. The panel asks before replacing an existing file.
+- **Desktop**: saved straight to the Desktop.
+- **The vault**: saved into **PDF folder in the vault**, or next to the note when that is
+  empty.
+
+A preset with its own `pdf-folder` always saves into that vault folder. The file name comes
+from the **PDF file name** template (default `{date} - {title}`). Desktop and vault saves never
+overwrite; a second save adds ` (2)`. **Open PDF after saving** opens the new file in your PDF
+app.
 
 One-click PDF relies on a part of Electron that some Obsidian versions do not offer. When it is
 unavailable, or anything goes wrong, a notice tells you why and the print dialog opens
