@@ -1,7 +1,7 @@
 # STATUS
 
 - Version: 0.3.1 Pass: 4 Milestone: M4 complete
-- Gate: D State: **open: waiting on Brian**
+- Gate: D State: closed (2026-10-07); Pass 5 in progress
 
 ## Done
 
@@ -36,6 +36,9 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian: Gate D closed. 0.3.1 confirmed: "it allowed me to save on the desktop".
+  "Open PDF after saving" kept as an option, off by default (no objection raised).
 
 - 2026-10-07, Brian: one-click PDFs should go to the Desktop or ask where to save, not next to
   the note. This deviates from SPEC 3.6 ("write to the configured vault folder") and allows

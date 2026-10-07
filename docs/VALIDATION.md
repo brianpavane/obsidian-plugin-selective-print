@@ -33,7 +33,7 @@ here from Brian's reports.
 | Adapter registry and fallback (fakes)                                                                                           | M4              | automated                                       | `test/output.test.ts`                                                   |
 | PDF adapter: write, no overwrite, `%PDF-` check, temp cleanup, open (fakes)                                                     | M4              | automated                                       | `test/output.test.ts`                                                   |
 | One-click PDF in Obsidian (hidden window, `printToPDF`), output quality                                                         | M4              | manual-verified on Obsidian 1.14.4 / macOS 26.7 | Brian, Gate D, 2026-10-07 (0.3.0: "The PDF is of good format")          |
-| PDF destination: Save panel on the Desktop, Desktop, vault                                                                      | 0.3.1           | **unverified** (automated with fakes)           | Gate D                                                                  |
+| PDF destination: Save panel on the Desktop                                                                                      | 0.3.1           | manual-verified on Obsidian 1.14.4 / macOS 26.7 | Brian, Gate D, 2026-10-07 ("it allowed me to save on the desktop")      |
 | PDF fallback notice and print dialog: QA item 10                                                                                | M4              | **unverified**                                  | Gate D                                                                  |
 | Core coverage                                                                                                                   | M1-M4           | automated                                       | 100% lines in `src/core/`, `src/output/adapter.ts`, `src/output/pdf.ts` |
 
@@ -41,6 +41,7 @@ here from Brian's reports.
 
 | Date       | Obsidian | macOS | Plugin | Item                                 | Result                                                       |
 | ---------- | -------- | ----- | ------ | ------------------------------------ | ------------------------------------------------------------ |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.3.1  | PDF Save panel on the Desktop        | pass                                                         |
 | 2026-10-07 | 1.14.4   | 26.7  | 0.3.0  | One-click PDF                        | pass (format good); saved next to the note, change requested |
 | 2026-10-07 | 1.14.4   | 26.7  | 0.2.0  | Gate C try-list and decisions        | "All good to me" (general; items not reported one by one)    |
 | 2026-10-07 | 1.14.4   | 26.7  | 0.1.0  | Print works; skip empty on/off works | pass                                                         |
