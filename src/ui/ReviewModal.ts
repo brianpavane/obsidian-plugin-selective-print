@@ -27,6 +27,8 @@ export interface ReviewContext {
   globalExclude: readonly string[];
   skipEmptyDefault: boolean;
   adapters: OutputAdapter[];
+  /** Selected output when the dialog opens; must be in `adapters`. */
+  initialAdapter: OutputAdapter;
   /** The note's print-exclude list, or null when the note has none. */
   noteExclude: string[] | null;
   /** Messages to show in the warnings area (note keys, preset problems). */
@@ -77,9 +79,7 @@ export class ReviewModal extends Modal {
   ) {
     super(app);
     this.preset = ctx.initialPreset;
-    const first = ctx.adapters[0];
-    if (!first) throw new Error("no output adapter is available");
-    this.adapter = first;
+    this.adapter = ctx.initialAdapter;
     this.depth = depths(ctx.tree);
     this.propertyNames = Object.keys(ctx.note.properties).filter((k) => !isControlProperty(k));
     this.chosenProperties = new Set(this.propertyNames);

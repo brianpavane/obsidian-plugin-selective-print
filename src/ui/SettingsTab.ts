@@ -1,8 +1,9 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import { DEFAULT_GLOBAL_EXCLUDE } from "../constants";
 import { validateRuleEntry } from "../core/selection";
-import { presetsFolderPath } from "../obsidian/vault-presets";
-import type { Orientation, PaperSize, PrintStyle } from "../settings";
+import { vaultFolderPath } from "../obsidian/vault-presets";
+import { renderFilename } from "../core/filename";
+import type { OutputFormat, Orientation, PaperSize, PrintStyle } from "../settings";
 import type SelectivePrintPlugin from "../main";
 
 /** Settings tab. Shows only settings whose feature has shipped (M2). */
@@ -63,7 +64,7 @@ export class SettingsTab extends PluginSettingTab {
       .setDesc("Vault folder that holds preset notes.")
       .addText((t) =>
         t.setValue(s.presetsFolder).onChange(async (v) => {
-          const ok = presetsFolderPath(v) !== null;
+          const ok = vaultFolderPath(v) !== null;
           folderSetting.descEl.setText(
             ok ? "Vault folder that holds preset notes." : "Must be a folder inside the vault.",
           );
@@ -96,6 +97,71 @@ export class SettingsTab extends PluginSettingTab {
       );
 
     new Setting(containerEl).setName("Output").setHeading();
+    new Setting(containerEl)
+      .setName("Default output")
+      .setDesc(
+        "Used by the header icon and preselected in the dialog. A preset's output format overrides it.",
+      )
+      .addDropdown((dd) =>
+        dd
+          .addOption("print", "Print")
+          .addOption("pdf", "PDF (one click)")
+          .setValue(s.defaultOutput === "pdf" ? "pdf" : "print")
+          .onChange(async (v) => {
+            s.defaultOutput = v as OutputFormat;
+            await this.plugin.saveSettings();
+          }),
+      );
+    const pdfFolder = new Setting(containerEl)
+      .setName("PDF folder")
+      .setDesc("Vault folder where PDF files are saved. Leave empty to save next to the note.")
+      .addText((t) =>
+        t
+          .setPlaceholder("Next to the note")
+          .setValue(s.pdfFolder)
+          .onChange(async (v) => {
+            const ok = v.trim() === "" || vaultFolderPath(v) !== null;
+            pdfFolder.descEl.setText(
+              ok
+                ? "Vault folder where PDF files are saved. Leave empty to save next to the note."
+                : "Must be a folder inside the vault.",
+            );
+            pdfFolder.descEl.toggleClass("selective-print-error", !ok);
+            if (!ok) return;
+            s.pdfFolder = v.trim();
+            await this.plugin.saveSettings();
+          }),
+      );
+    const example = (template: string): string =>
+      renderFilename(template, {
+        title: "Weekly Sync",
+        preset: "Meeting notes",
+        properties: { date: "2026-10-07" },
+        now: new Date(),
+      }).name + ".pdf";
+    const filename = new Setting(containerEl)
+      .setName("PDF file name")
+      .setDesc(
+        `Variables: {title} {date} {datetime} {preset} {frontmatter.<key>}. Example: ${example(s.filenameTemplate)}`,
+      )
+      .addText((t) =>
+        t.setValue(s.filenameTemplate).onChange(async (v) => {
+          s.filenameTemplate = v.trim() === "" ? "{title}" : v;
+          filename.setDesc(
+            `Variables: {title} {date} {datetime} {preset} {frontmatter.<key>}. Example: ${example(s.filenameTemplate)}`,
+          );
+          await this.plugin.saveSettings();
+        }),
+      );
+    new Setting(containerEl)
+      .setName("Open PDF after saving")
+      .setDesc("Opens the saved file in your default PDF app.")
+      .addToggle((t) =>
+        t.setValue(s.openPdfInPreview).onChange(async (v) => {
+          s.openPdfInPreview = v;
+          await this.plugin.saveSettings();
+        }),
+      );
     new Setting(containerEl)
       .setName("Skip empty sections")
       .setDesc("Default for the dialog: leave out sections with only placeholders.")

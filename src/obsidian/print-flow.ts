@@ -1,5 +1,6 @@
 import { App, Notice, TFile } from "obsidian";
 import { PLUGIN_NAME } from "../constants";
+import { renderFilename } from "../core/filename";
 import { buildJob, type PrintJob } from "../core/job";
 import { readNoteOverrides } from "../core/note-keys";
 import {
@@ -12,14 +13,21 @@ import {
 import { parseSections } from "../core/sections";
 import { finalSelection, resolveDefaults, validateRuleEntry } from "../core/selection";
 import type { Logger } from "../logger";
-import type { OutputAdapter } from "../output/adapter";
+import {
+  checkAdapters,
+  runWithFallback,
+  type OutputAdapter,
+  type OutputOptions,
+} from "../output/adapter";
 import type { SelectivePrintSettings } from "../settings";
 import { promptForName } from "../ui/NamePromptModal";
 import { ReviewModal } from "../ui/ReviewModal";
 import { readNote, type NoteSnapshot } from "./note-source";
 import { rememberExclusions } from "./note-writes";
 import { renderJob } from "./render";
-import type { PresetStore } from "./vault-presets";
+import { vaultFolderPath, type PresetStore } from "./vault-presets";
+
+export type OutputId = "print" | "pdf";
 
 /**
  * One invocation: read the note, compute defaults, optionally show the review dialog,
@@ -30,6 +38,8 @@ export class PrintFlow {
     private readonly app: App,
     private readonly settings: () => SelectivePrintSettings,
     private readonly adapters: () => OutputAdapter[],
+    /** The Print adapter: the fallback for every other adapter. */
+    private readonly fallback: () => OutputAdapter,
     private readonly store: PresetStore,
     private readonly log: Logger,
   ) {}
@@ -59,7 +69,30 @@ export class PrintFlow {
     return { list: orderForDropdown(presets, match), initial: defaultPreset(match), notices };
   }
 
-  async start(file: TFile, opts: { dialog: boolean }): Promise<void> {
+  /** Pick the adapter: requested id, else the preset's format, else the setting; Print if unavailable. */
+  private async chooseAdapter(
+    preset: Preset,
+    requested: OutputId | undefined,
+  ): Promise<{ adapter: OutputAdapter; available: OutputAdapter[] }> {
+    const { available, unavailable } = await checkAdapters(this.adapters());
+    for (const u of unavailable) this.log.debug(`adapter ${u.adapter.id} unavailable: ${u.reason}`);
+    const wanted = requested ?? preset.output.format ?? this.settings().defaultOutput;
+    const hit = available.find((a) => a.id === wanted);
+    if (hit) return { adapter: hit, available };
+    const missing = unavailable.find((u) => u.adapter.id === wanted);
+    if (missing) {
+      new Notice(
+        `${PLUGIN_NAME}: one-click ${missing.adapter.label} is not available (${missing.reason}). ` +
+          `Use PDF → Save as PDF in the print dialog instead.`,
+        8000,
+      );
+    }
+    const adapter = available.find((a) => a.id === "print") ?? available[0];
+    if (!adapter) throw new Error("no output adapter is available");
+    return { adapter, available };
+  }
+
+  async start(file: TFile, opts: { dialog: boolean; output?: OutputId }): Promise<void> {
     try {
       if (file.extension !== "md") {
         new Notice(`${PLUGIN_NAME}: only Markdown notes can be printed.`);
@@ -67,11 +100,11 @@ export class PrintFlow {
       }
       const note = await readNote(this.app, file);
       const tree = parseSections(note.source);
-      const adapters = await this.availableAdapters();
       const overrides = readNoteOverrides(note.properties);
       const { list, initial, notices } = this.presetsFor(note);
       notices.push(...overrides.warnings.map((w) => w.message));
       const settings = this.settings();
+      const { adapter: initialAdapter, available } = await this.chooseAdapter(initial, opts.output);
 
       if (opts.dialog) {
         new ReviewModal(
@@ -83,7 +116,8 @@ export class PrintFlow {
             initialPreset: initial,
             globalExclude: this.globalExclude(),
             skipEmptyDefault: settings.skipEmpty,
-            adapters,
+            adapters: available,
+            initialAdapter,
             noteExclude: overrides.noteExclude,
             notices,
             remember: (exclude) => rememberExclusions(this.app, file, exclude),
@@ -135,22 +169,10 @@ export class PrintFlow {
       ]) {
         new Notice(`${PLUGIN_NAME}: ${message}`);
       }
-      const adapter = adapters[0];
-      if (!adapter) throw new Error("no output adapter is available");
-      await this.output(note, job, adapter, initial);
+      await this.output(note, job, initialAdapter, initial);
     } catch (err) {
       this.fail("could not print", err);
     }
-  }
-
-  private async availableAdapters(): Promise<OutputAdapter[]> {
-    const out: OutputAdapter[] = [];
-    for (const a of this.adapters()) {
-      const status = await a.isAvailable();
-      if (status.ok) out.push(a);
-      else this.log.debug(`adapter ${a.id} unavailable: ${status.reason ?? "unknown"}`);
-    }
-    return out;
   }
 
   private async output(
@@ -168,24 +190,65 @@ export class PrintFlow {
         );
       }
       const s = this.settings();
-      const result = await adapter.run(
+      const options: OutputOptions = {
+        paper: preset.output.paper ?? s.paper,
+        orientation: preset.output.orientation ?? s.orientation,
+        marginsIn: s.marginsIn,
+      };
+      let primary = adapter;
+      if (adapter.id === "pdf") {
+        try {
+          options.target = this.pdfTarget(note, preset);
+        } catch (err) {
+          new Notice(
+            `${PLUGIN_NAME}: ${err instanceof Error ? err.message : String(err)}. Opening the print dialog instead.`,
+          );
+          primary = this.fallback();
+        }
+      }
+      const result = await runWithFallback(
+        primary,
+        this.fallback(),
         {
           title: note.title,
           content: rendered.content,
           matchTheme: s.printStyle === "match-theme",
         },
-        {
-          paper: preset.output.paper ?? s.paper,
-          orientation: preset.output.orientation ?? s.orientation,
-          marginsIn: s.marginsIn,
-        },
+        options,
+        (message) => new Notice(`${PLUGIN_NAME}: ${message}`, 10000),
       );
       if (!result.ok) new Notice(`${PLUGIN_NAME}: ${result.message ?? `${adapter.label} failed.`}`);
+      else if (result.path)
+        new Notice(`${PLUGIN_NAME}: ${result.message ?? `saved ${result.path}`}`);
     } catch (err) {
       this.fail("could not print", err);
     } finally {
       rendered?.dispose();
     }
+  }
+
+  /** PDF folder and file name from the preset or settings (SPEC 3.6). */
+  private pdfTarget(note: NoteSnapshot, preset: Preset): NonNullable<OutputOptions["target"]> {
+    const s = this.settings();
+    const folderSetting = preset.output.pdfFolder ?? s.pdfFolder;
+    let folder: string;
+    if (folderSetting.trim() === "") {
+      const parent = note.file.parent?.path ?? "";
+      folder = parent === "/" ? "" : parent;
+    } else {
+      const resolved = vaultFolderPath(folderSetting);
+      if (resolved === null)
+        throw new Error(`the PDF folder "${folderSetting}" points outside the vault`);
+      folder = resolved;
+    }
+    const { name, warnings } = renderFilename(preset.output.filename ?? s.filenameTemplate, {
+      title: note.title,
+      preset: preset.name,
+      properties: note.properties,
+      now: new Date(),
+    });
+    for (const w of warnings) new Notice(`${PLUGIN_NAME}: file name: ${w.message}`);
+    return { folder, name, openAfter: s.openPdfInPreview };
   }
 
   private fail(what: string, err: unknown): void {

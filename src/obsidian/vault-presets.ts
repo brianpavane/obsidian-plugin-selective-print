@@ -14,8 +14,8 @@ import { sanitizeFilename } from "../core/filename";
 import type { Logger } from "../logger";
 import { STARTERS } from "../starters";
 
-/** Normalize the presets folder setting; null when it would leave the vault. */
-export function presetsFolderPath(setting: string): string | null {
+/** Normalize a vault folder setting ("" = vault root); null when it would leave the vault. */
+export function vaultFolderPath(setting: string): string | null {
   const raw = setting.trim();
   if (raw === "" || raw === "/") return "";
   if (raw.split(/[\\/]/).some((part) => part === "..")) return null;
@@ -50,7 +50,7 @@ export class PresetStore {
   }
 
   folder(): string | null {
-    return presetsFolderPath(this.folderSetting());
+    return vaultFolderPath(this.folderSetting());
   }
 
   /** Preset files (valid or not) in the folder. */

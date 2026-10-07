@@ -2,11 +2,15 @@ import { MarkdownView, Notice, Platform, Plugin, TFile } from "obsidian";
 import { PLUGIN_NAME } from "./constants";
 import { createLogger, type Logger } from "./logger";
 import { buildDiagnostics, DiagnosticsModal } from "./obsidian/diagnostics";
-import { PrintFlow } from "./obsidian/print-flow";
+import { PrintFlow, type OutputId } from "./obsidian/print-flow";
 import { HeaderActions } from "./obsidian/triggers";
 import { describeStarterSync, noticeError, PresetStore } from "./obsidian/vault-presets";
 import type { OutputAdapter } from "./output/adapter";
+import printCss from "../print.css";
+import { openPathExternally, pdfCapability, renderHtmlFileToPdf } from "./output/electron-bridge";
+import { PdfAdapter } from "./output/pdf";
 import { PrintAdapter } from "./output/print";
+import { VaultPdfIo } from "./obsidian/pdf-io";
 import { migrateSettings, type SelectivePrintSettings } from "./settings";
 import { PresetPickerModal } from "./ui/PresetPickerModal";
 import { SettingsTab } from "./ui/SettingsTab";
@@ -32,13 +36,24 @@ export default class SelectivePrintPlugin extends Plugin {
       return;
     }
 
-    this.adapters = [new PrintAdapter(this.log, this.pendingCleanups)];
+    const printAdapter = new PrintAdapter(this.log, this.pendingCleanups);
+    const pdfIo = new VaultPdfIo(
+      this.app,
+      this.manifest.dir ?? `${this.app.vault.configDir}/plugins/${this.manifest.id}`,
+    );
+    const pdfAdapter = new PdfAdapter(
+      { capability: pdfCapability, render: renderHtmlFileToPdf, open: openPathExternally },
+      pdfIo,
+      printCss,
+    );
+    this.adapters = [printAdapter, pdfAdapter];
     this.store = new PresetStore(this.app, () => this.settings.presetsFolder, this.log);
     this.store.watch(this);
     this.flow = new PrintFlow(
       this.app,
       () => this.settings,
       () => this.adapters,
+      () => printAdapter,
       this.store,
       this.log,
     );
@@ -51,9 +66,18 @@ export default class SelectivePrintPlugin extends Plugin {
       checkCallback: (checking) => this.withActiveNote(checking, (file) => this.print(file, true)),
     });
     this.addCommand({
+      id: "save-current-note-as-pdf",
+      name: "Save current note as PDF",
+      checkCallback: (checking) =>
+        this.withActiveNote(checking, (file) =>
+          this.print(file, this.settings.alwaysReview, "pdf"),
+        ),
+    });
+    this.addCommand({
       id: "quick-print-current-note",
       name: "Quick print current note (preset defaults)",
-      checkCallback: (checking) => this.withActiveNote(checking, (file) => this.print(file, false)),
+      checkCallback: (checking) =>
+        this.withActiveNote(checking, (file) => this.print(file, false, "print")),
     });
     this.addCommand({
       id: "validate-presets",
@@ -115,6 +139,7 @@ export default class SelectivePrintPlugin extends Plugin {
     this.app.workspace.onLayoutReady(() => {
       this.header?.refresh();
       void this.store.reload().then(() => this.syncStarters("auto"));
+      void pdfIo.removeStaleTemp();
     });
     this.registerEvent(this.app.workspace.on("layout-change", () => this.header?.refresh()));
     this.registerEvent(this.app.workspace.on("file-open", () => this.header?.refresh()));
@@ -168,8 +193,8 @@ export default class SelectivePrintPlugin extends Plugin {
     }
   }
 
-  private print(file: TFile, dialog: boolean): void {
-    void this.flow.start(file, { dialog });
+  private print(file: TFile, dialog: boolean, output?: OutputId): void {
+    void this.flow.start(file, output ? { dialog, output } : { dialog });
   }
 
   private withActiveNote(checking: boolean, run: (file: TFile) => void): boolean {
