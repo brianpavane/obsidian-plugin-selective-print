@@ -2,8 +2,8 @@ import { apiVersion, App, Modal, Notice, Platform } from "obsidian";
 import { detectElectronCapabilities, probePrintToPdf } from "../output/electron-bridge";
 
 /**
- * Spike B (M0): report environment and Electron capabilities. Contains no note content.
- * Brian pastes this output into the Gate A report.
+ * Report environment and Electron capabilities (from Spike B). Contains no note content.
+ * Used to diagnose problems; becomes "Copy diagnostics" in settings at M5.
  */
 export async function buildDiagnostics(app: App, pluginVersion: string): Promise<string> {
   const caps = detectElectronCapabilities();

@@ -2,7 +2,7 @@
   "id": "selective-print",
   "name": "Selective Print",
   "version": "0.0.1",
-  "minAppVersion": "1.1.0",
+  "minAppVersion": "1.2.3",
   "description": "Print and export notes to PDF, choosing which sections to include each time.",
   "author": "Brian Pavane",
   "isDesktopOnly": true
