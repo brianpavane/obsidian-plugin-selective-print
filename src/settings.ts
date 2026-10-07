@@ -24,6 +24,8 @@ export interface SelectivePrintSettings {
   orientation: Orientation;
   marginsIn: number;
   printStyle: PrintStyle;
+  /** Page header (location, last modified) and footer (printed, page X of Y). */
+  headerFooter: boolean;
   pdfDestination: PdfDestination;
   /** Vault folder used when pdfDestination is "vault" ("" = next to the note). */
   pdfFolder: string;
@@ -48,6 +50,7 @@ export function defaultSettings(): SelectivePrintSettings {
     orientation: "portrait",
     marginsIn: 0.75,
     printStyle: "neutral",
+    headerFooter: true,
     pdfDestination: "ask",
     pdfFolder: "",
     filenameTemplate: "{date} - {title}",

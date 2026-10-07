@@ -5,6 +5,7 @@ import {
   PRINT_CLEANUP_TIMEOUT_MS,
   PRINT_FRAME_CLASS,
 } from "../constants";
+import { marginBoxCss } from "../core/header-footer";
 import type { Logger } from "../logger";
 import {
   pageCss,
@@ -71,7 +72,10 @@ export class PrintAdapter implements OutputAdapter {
 
       // Styles go in as constructed stylesheets of the iframe's own window; no <style> elements.
       const sheet = new (win as unknown as { CSSStyleSheet: typeof CSSStyleSheet }).CSSStyleSheet();
-      sheet.replaceSync(`${doc.matchTheme ? themeCss() : ""}\n${printCss}\n${pageCss(opts)}`);
+      const margins = opts.labels ? marginBoxCss(opts.labels) : "";
+      sheet.replaceSync(
+        `${doc.matchTheme ? themeCss() : ""}\n${printCss}\n${pageCss(opts)}\n${margins}`,
+      );
       iframeDoc.adoptedStyleSheets = [sheet];
       // Build the content in the main window (createEl is only patched there), then import.
       const wrapper = createDiv();

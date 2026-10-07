@@ -1,3 +1,4 @@
+import type { PageLabels } from "../core/header-footer";
 import type { Orientation, PaperSize } from "../settings";
 
 /** One output step (SPEC 3.6). New formats are new adapters; the pipeline does not change. */
@@ -17,6 +18,8 @@ export interface OutputOptions {
   marginsIn: number;
   /** Where file-producing adapters save. `name` has no extension. */
   target?: OutputTarget;
+  /** Page header and footer text; omitted when the setting is off. */
+  labels?: PageLabels;
 }
 
 /**

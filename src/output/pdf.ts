@@ -1,4 +1,5 @@
 import { uniqueFilename } from "../core/filename";
+import { pdfTemplates } from "../core/header-footer";
 import {
   pageCss,
   type OutputAdapter,
@@ -19,7 +20,14 @@ export interface PdfBridge {
   capability(): { ok: boolean; reason?: string };
   render(
     htmlAbsPath: string,
-    opts: { pageSize: "Letter" | "A4"; landscape: boolean; marginsIn: number; timeoutMs: number },
+    opts: {
+      pageSize: "Letter" | "A4";
+      landscape: boolean;
+      marginsIn: number;
+      timeoutMs: number;
+      /** HTML header and footer templates (Chromium fills .pageNumber and .totalPages). */
+      headerFooter?: { header: string; footer: string };
+    },
   ): Promise<Uint8Array>;
   open(absPath: string): Promise<void>;
   desktopDir(): string;
@@ -91,6 +99,7 @@ export class PdfAdapter implements OutputAdapter {
         landscape: opts.orientation === "landscape",
         marginsIn: opts.marginsIn,
         timeoutMs: PDF_TIMEOUT_MS,
+        ...(opts.labels ? { headerFooter: pdfTemplates(opts.labels, opts.marginsIn) } : {}),
       });
     } finally {
       await temp.cleanup();

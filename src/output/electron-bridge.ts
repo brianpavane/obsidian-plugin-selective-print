@@ -154,6 +154,7 @@ export interface PdfRenderOptions {
   landscape: boolean;
   marginsIn: number;
   timeoutMs: number;
+  headerFooter?: { header: string; footer: string };
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number, what: string): Promise<T> {
@@ -212,6 +213,13 @@ export async function renderHtmlFileToPdf(
         printBackground: true,
         preferCSSPageSize: true,
         margins: { top: m, bottom: m, left: m, right: m },
+        ...(opts.headerFooter
+          ? {
+              displayHeaderFooter: true,
+              headerTemplate: opts.headerFooter.header,
+              footerTemplate: opts.headerFooter.footer,
+            }
+          : {}),
       }),
       opts.timeoutMs,
       "creating the PDF",

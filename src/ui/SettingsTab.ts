@@ -210,14 +210,29 @@ export class SettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }),
     );
-    new Setting(containerEl).setName("Margins (inches)").addText((t) =>
-      t.setValue(String(s.marginsIn)).onChange(async (v) => {
-        const n = Number(v);
-        if (!Number.isFinite(n) || n < 0 || n > 3) return;
-        s.marginsIn = n;
-        await this.plugin.saveSettings();
-      }),
-    );
+    new Setting(containerEl)
+      .setName("Margins (inches)")
+      .setDesc("0.4 to 3. The header and footer print inside the margin.")
+      .addText((t) =>
+        t.setValue(String(s.marginsIn)).onChange(async (v) => {
+          const n = Number(v);
+          // The header and footer sit in the margin; below 0.4 in they would be clipped.
+          if (!Number.isFinite(n) || n < 0.4 || n > 3) return;
+          s.marginsIn = n;
+          await this.plugin.saveSettings();
+        }),
+      );
+    new Setting(containerEl)
+      .setName("Header and footer")
+      .setDesc(
+        "Header: the note's folder and name, and when it was last modified. Footer: when it was printed, and the page number.",
+      )
+      .addToggle((t) =>
+        t.setValue(s.headerFooter).onChange(async (v) => {
+          s.headerFooter = v;
+          await this.plugin.saveSettings();
+        }),
+      );
     new Setting(containerEl)
       .setName("Print style")
       .setDesc(

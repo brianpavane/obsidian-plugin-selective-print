@@ -310,6 +310,21 @@ describe("PdfAdapter", () => {
     });
   });
 
+  it("passes header and footer templates to the bridge only when labels are given", async () => {
+    const render = vi.fn<PdfBridge["render"]>(() => Promise.resolve(PDF));
+    const f = fakes({ render });
+    const labels = {
+      headerLeft: "Meetings/Sync",
+      headerRight: "Last modified x",
+      footerLeft: "Printed y",
+    };
+    await new PdfAdapter(f.bridge, f.io, "").run(doc, { ...opts, labels });
+    expect(render.mock.calls[0]?.[1].headerFooter?.header).toContain("Meetings/Sync");
+    expect(render.mock.calls[0]?.[1].headerFooter?.footer).toContain('class="totalPages"');
+    await new PdfAdapter(f.bridge, f.io, "").run(doc, opts);
+    expect(render.mock.calls[1]?.[1].headerFooter).toBeUndefined();
+  });
+
   it("isPdf", () => {
     expect(isPdf(PDF)).toBe(true);
     expect(isPdf(new Uint8Array([0x25, 0x50]))).toBe(false);

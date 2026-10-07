@@ -1,6 +1,7 @@
 import { App, Notice, TFile } from "obsidian";
 import { PLUGIN_NAME } from "../constants";
 import { renderFilename } from "../core/filename";
+import { pageLabels } from "../core/header-footer";
 import { buildJob, type PrintJob } from "../core/job";
 import { readNoteOverrides } from "../core/note-keys";
 import {
@@ -204,6 +205,13 @@ export class PrintFlow {
         orientation: preset.output.orientation ?? s.orientation,
         marginsIn: s.marginsIn,
       };
+      if (s.headerFooter) {
+        options.labels = pageLabels({
+          path: note.file.path,
+          printedAt: new Date(),
+          modifiedAt: new Date(note.file.stat.mtime),
+        });
+      }
       let primary = adapter;
       if (adapter.id === "pdf") {
         try {
