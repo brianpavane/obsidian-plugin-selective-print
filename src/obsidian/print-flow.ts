@@ -2,7 +2,8 @@ import { App, Notice, TFile } from "obsidian";
 import { PLUGIN_NAME } from "../constants";
 import { renderFilename } from "../core/filename";
 import { pageLabels } from "../core/header-footer";
-import { buildJob, type PrintJob } from "../core/job";
+import type { PrintJob } from "../core/job";
+import { defaultJobForNote } from "../core/note-job";
 import { readNoteOverrides } from "../core/note-keys";
 import {
   defaultPreset,
@@ -12,7 +13,7 @@ import {
   type Preset,
 } from "../core/presets";
 import { parseSections } from "../core/sections";
-import { finalSelection, resolveDefaults, validateRuleEntry } from "../core/selection";
+import { validateRuleEntry } from "../core/selection";
 import type { Logger } from "../logger";
 import {
   checkAdapters,
@@ -146,32 +147,21 @@ export class PrintFlow {
         return;
       }
 
-      const r = resolveDefaults({
+      const { job, warnings } = defaultJobForNote({
         tree,
-        globalExclude: this.globalExclude(),
-        preset: initial.sections,
-        noteExclude: overrides.noteExclude,
-      });
-      const job = buildJob({
-        tree,
-        included: finalSelection(r.defaults),
-        title: note.title,
-        includeTitle: initial.includeTitle,
-        skipEmpty: initial.sections.skipEmpty ?? settings.skipEmpty,
-        inlineMarkers: initial.inlineMarkers,
-        excludeCalloutTypes: initial.callouts.excludeTypes,
-        properties: {
-          values: note.properties,
-          mode: initial.properties.mode === "except" ? "choose" : initial.properties.mode,
-          chosen: Object.keys(note.properties).filter(
-            (k) => !initial.properties.list.some((x) => x.toLowerCase() === k.toLowerCase()),
-          ),
+        note: {
+          path: note.file.path,
+          title: note.title,
+          properties: note.properties,
+          tags: note.tags,
         },
+        presets: this.store.presets,
+        globalExclude: this.globalExclude(),
+        settingsSkipEmpty: settings.skipEmpty,
+        presetOverride: initial,
       });
-      for (const message of [
-        ...notices,
-        ...[...r.warnings, ...job.warnings].map((w) => w.message),
-      ]) {
+      // `notices` already holds preset and note-key messages from presetsFor/readNoteOverrides.
+      for (const message of new Set([...notices, ...warnings])) {
         new Notice(`${PLUGIN_NAME}: ${message}`);
       }
       await this.output(note, job, initialAdapter, initial);

@@ -89,3 +89,12 @@ export function pdfTemplates(
     ),
   };
 }
+
+/** Labels for a multi-note pack: one header for the whole document. */
+export function packLabels(input: { title: string; count: number; printedAt: Date }): PageLabels {
+  return {
+    headerLeft: input.title,
+    headerRight: `${input.count} ${input.count === 1 ? "note" : "notes"}`,
+    footerLeft: `Printed ${formatTimestamp(input.printedAt)}`,
+  };
+}
