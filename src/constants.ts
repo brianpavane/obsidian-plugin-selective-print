@@ -21,3 +21,6 @@ export const PRINT_CLEANUP_TIMEOUT_MS = 5 * 60 * 1000;
 /** Render settle detector: quiet period with no DOM changes, and a hard timeout. */
 export const RENDER_QUIET_MS = 400;
 export const RENDER_TIMEOUT_MS = 8000;
+
+/** Preset files are reloaded this long after the last change in the presets folder. */
+export const PRESET_RELOAD_DEBOUNCE_MS = 300;
