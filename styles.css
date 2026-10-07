@@ -18,3 +18,112 @@
   max-height: 50vh;
   overflow: auto;
 }
+
+/* Off-screen host where notes are rendered before printing. Attached so async renderers
+   (Dataview, Mermaid) can lay out; the width approximates a printed page. */
+.selective-print-render-host {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 7in;
+  pointer-events: none;
+}
+
+/* Review dialog */
+.selective-print-modal {
+  width: min(640px, 92vw);
+}
+
+.selective-print-warnings:empty {
+  display: none;
+}
+
+.selective-print-warning {
+  color: var(--text-warning);
+  font-size: var(--font-ui-small);
+  margin-bottom: var(--size-2-1);
+}
+
+.selective-print-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-2);
+  margin: var(--size-4-2) 0;
+}
+
+.selective-print-sections {
+  max-height: 40vh;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding: var(--size-2-2) 0;
+}
+
+.selective-print-row {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-3);
+  padding: var(--size-2-1) var(--size-4-2);
+  padding-left: calc(var(--size-4-2) + var(--selective-print-depth, 0) * 1.25em);
+  cursor: pointer;
+}
+
+.selective-print-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.selective-print-row.is-empty .selective-print-row-title {
+  color: var(--text-faint);
+}
+
+.selective-print-row-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selective-print-tag {
+  font-size: var(--font-ui-smaller);
+  padding: 0 var(--size-2-2);
+  border-radius: var(--radius-s);
+  background: var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.selective-print-size {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.selective-print-property-chooser {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-2) var(--size-4-3);
+  padding-bottom: var(--size-4-2);
+}
+
+.selective-print-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-1);
+  font-size: var(--font-ui-small);
+}
+
+.selective-print-summary {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  margin-top: var(--size-4-2);
+}
+
+.selective-print-empty-note {
+  padding: var(--size-4-2);
+  color: var(--text-muted);
+}
+
+/* Settings */
+.selective-print-error {
+  color: var(--text-error);
+}
