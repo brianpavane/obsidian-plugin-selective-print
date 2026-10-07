@@ -19,8 +19,8 @@ Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-Nothing. 0.6.0 reported working on 2026-10-07 ("This is working as it should be"). Header and
-footer were not confirmed separately; they stay marked unverified.
+Nothing. 0.6.0 reported working on 2026-10-07 ("This is working as it should be"). Header and footer
+confirmed separately ("The header/footer are good").
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -131,8 +131,8 @@ reserved), preset fields fall back to settings, and the filename rules.
 - PDF: remote (http) images are not inlined; the PDF window loads them as Obsidian does.
 - Whether `afterprint` fires on Cancel is unknown (spike A4 was waived). Mitigation: each new
   print cleans up the previous print frame, and a 5-minute timer is the fallback.
-- Print-panel header and footer rely on CSS page-margin boxes (recent Chromium only); if
-  unsupported they are silently absent. PDFs use Electron templates instead.
+- Print-panel header and footer rely on CSS page-margin boxes; they work on Obsidian 1.14.4
+  but could disappear silently on a much older Chromium. PDFs use Electron templates.
 - "Match theme" is experimental: Obsidian's own print CSS may interfere.
 - With the Neutral style, math (MathJax) may lose formatting, because its styles live in the
   Obsidian window.
