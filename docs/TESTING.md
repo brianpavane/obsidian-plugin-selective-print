@@ -2,15 +2,35 @@
 
 ## Commands
 
-| Command             | What it runs                                                             |
-| ------------------- | ------------------------------------------------------------------------ |
-| `npm test`          | All Vitest unit tests (`test/**/*.test.ts`)                              |
-| `npm run coverage`  | Tests plus v8 coverage of `src/core/`; fails below 90% lines             |
-| `npm run lint`      | ESLint (Obsidian ruleset plus pure-core restrictions) and Prettier check |
-| `npm run typecheck` | `tsc --noEmit`, strict                                                   |
-| `npm run build`     | Production bundle (`main.js`)                                            |
+| Command             | What it runs                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `npm test`          | All Vitest unit tests (`test/**/*.test.ts`)                                                                   |
+| `npm run coverage`  | Tests plus v8 coverage of `src/core/`, `src/output/adapter.ts` and `src/output/pdf.ts`; fails below 90% lines |
+| `npm run lint`      | ESLint (Obsidian ruleset plus pure-core restrictions) and Prettier check                                      |
+| `npm run typecheck` | `tsc --noEmit`, strict                                                                                        |
+| `npm run build`     | Production bundle (`main.js`)                                                                                 |
 
 CI runs lint, typecheck, coverage and build on every push and pull request.
+
+## Test files
+
+| File                   | Covers                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------- |
+| `sections.test.ts`     | Parser, round-trip property test (fast-check), emptiness, performance                             |
+| `selection.test.ts`    | Rules, precedence, global list cases, drift                                                       |
+| `filter.test.ts`       | Selection slicing, markers, callouts, skip-empty, properties, pipeline                            |
+| `presets.test.ts`      | Schema validation, set validation, matching, specificity, dropdown order, serialization           |
+| `filename.test.ts`     | Templates, sanitizing, unique names                                                               |
+| `dialog-state.test.ts` | Tri-state checklist, quick actions, size hints                                                    |
+| `job.test.ts`          | Snapshot of the Markdown passed to the renderer; whole-pipeline performance (12k lines)           |
+| `note-keys.test.ts`    | `print-exclude` / `print-preset`; Remember list and lossiness                                     |
+| `starters.test.ts`     | Bundled starters validate and match; install and upgrade plan                                     |
+| `output.test.ts`       | Adapter registry, fallback, PDF adapter (vault, Desktop, Save panel, cancel, failures) with fakes |
+| `diagnostics.test.ts`  | Diagnostics report content (no note content)                                                      |
+| `settings.test.ts`     | Settings defaults and migration                                                                   |
+
+Not testable outside Obsidian, and covered by manual QA instead (`docs/MANUAL_QA.md`): rendering,
+the print panel, the hidden PDF window, the Save panel, vault events and the dialog UI.
 
 ## How fixtures work
 

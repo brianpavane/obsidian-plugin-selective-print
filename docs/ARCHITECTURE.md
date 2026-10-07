@@ -14,18 +14,27 @@
 ## Pipeline
 
 ```
-note source ──► parseSections ──► resolveDefaults ──► (review dialog, M2) ──► finalSelection
-                  (sections.ts)     (selection.ts)        user toggles          (selection.ts)
-                                         ▲                                           │
-           global list (settings) ───────┤                                           ▼
-           preset (presets.ts) ──────────┤                                    filterNote (filter.ts)
-           note print-exclude ───────────┘                         selection → markers → callouts
-                                                                   → skip-empty → properties
-                                                                                     │
-                                                                                     ▼
-                                            render (M2: MarkdownRenderer + settle detector)
-                                                                                     │
-                                                       output adapter: Print (M2) · PDF (M4) · HTML/MD (1.1)
+trigger (header icon, command, menu)
+  │
+  ▼
+readNote ──► parseSections ──► matchPresets ──► resolveDefaults ──► review dialog ──► buildJob
+(source,      (sections.ts)    (presets.ts;     (selection.ts:      (dialog-state.ts;   (job.ts →
+ properties,                    vault presets,   dialog > note       Remember writes     filterNote:
+ tags)                          print-preset)    print-exclude >     print-exclude)      selection →
+                                                 preset + global >                       markers →
+                                                 global > none)                          callouts →
+                                                                                         skip-empty →
+                                                                                         properties)
+                                                                                              │
+                                                                                              ▼
+                                       renderJob (MarkdownRenderer off screen + settle detector)
+                                                                                              │
+                                                                                              ▼
+                              runWithFallback(adapter, Print)
+                                ├─ Print: hidden sandboxed iframe → macOS print panel
+                                └─ PDF:   Save panel / Desktop / vault target → temp HTML in the plugin
+                                          folder → hidden BrowserWindow (no JS) → printToPDF →
+                                          %PDF- check → write (never overwrite) → optional open
 ```
 
 ## Module responsibilities
@@ -140,8 +149,24 @@ sanitizeFilename(name, maxLength = 120, fallback = "Untitled"): string
 uniqueFilename(base, ext, exists: (name) => boolean): string     // "x.pdf", "x (2).pdf", ...
 ```
 
-## Adapter interface (implemented from M2)
+## Adapter interface and how to add an adapter
 
-See `SPEC.md` section 3.6. Each output adapter implements `isAvailable()` and `run()`.
-Adding an adapter means a new file in `src/output/` and a registry entry; the pipeline does
-not change.
+```ts
+interface OutputAdapter {
+  id: "print" | "pdf" | "html" | "markdown";
+  label: string; // menu label, e.g. "PDF"
+  action: string; // primary button, e.g. "Save PDF"
+  isAvailable(): Promise<{ ok: boolean; reason?: string }>;
+  run(doc: RenderedDocument, opts: OutputOptions): Promise<OutputResult>;
+}
+```
+
+To add one (for example HTML in 1.1):
+
+1. Create `src/output/<name>.ts`. Inject anything environment-specific so it can be tested with
+   fakes, as `pdf.ts` does.
+2. Register it in `main.ts` (`this.adapters`).
+3. Give it tests in `test/output.test.ts`.
+
+The dialog's Output menu, `checkAdapters` and `runWithFallback` pick it up without changes.
+`OutputResult.cancelled` means the user cancelled: no fallback and no error.

@@ -1,29 +1,29 @@
 # STATUS
 
-- Version: 0.3.1 Pass: 4 Milestone: M4 complete
-- Gate: D State: closed (2026-10-07); Pass 5 in progress
+- Version: 0.4.0 (release candidate for 1.0.0) Pass: 5 Milestone: M5 complete
+- Gate: E State: **open: waiting on Brian**
 
 ## Done
 
-- Pass 1 (M0 + M1), Pass 2 (M2, 0.1.0), Pass 3 (M3, 0.2.0). Gates A, B and C closed on
-  2026-10-07.
-- Pass 4 (M4): PDF adapter through the Electron bridge (hidden window, JavaScript disabled),
-  `%PDF-` check, non-overwriting vault write, filename templates, PDF folder, open after save,
-  automatic fallback to Print with a notice, Save current note as PDF command, Output menu
-  driven by `isAvailable()`. 157 tests (adapter registry, fallback and PDF failure paths with
-  fakes). Release 0.3.0 published for BRAT.
+- Passes 1-4 (M0-M4): core, dialog, Print, presets, one-click PDF. Gates A-D closed on
+  2026-10-07. Releases 0.1.0, 0.2.0, 0.3.0, 0.3.1.
+- Pass 5 (M5): Copy diagnostics (no note content, tested), debug timings, hardening (no
+  unhandled rejections from preset loading or the preset picker), a performance test on a
+  12k-line note, complete docs (README with fresh-vault BRAT steps, user guide, presets,
+  troubleshooting, architecture, testing, validation, manual QA), draft 1.0.0 release notes
+  (`docs/RELEASE_NOTES_1.0.0.md`). 163 tests. Release candidate 0.4.0 published for BRAT.
 
 ## In progress
 
-Nothing. Stopped at Gate D.
+Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-Reported 2026-10-07 on 0.3.0: one-click PDF works ("The PDF is of good format"), but it saved
-next to the note; it should go to the Desktop or ask. Fixed in 0.3.1.
-
-1. Update to 0.3.1 and check where the PDF goes (Gate D list in `docs/MANUAL_QA.md`).
-2. Decide: keep "Open PDF after saving"?
+1. Update to 0.4.0 and try the Gate E list in `docs/MANUAL_QA.md` (5 items). Report in plain
+   words.
+2. Review the docs if you want (README and user guide are the user-facing ones).
+3. Sign off on 1.0.0: confirm the release (repo stays public, release notes, tag `1.0.0`).
+   Anything not confirmed is listed as unverified in the release notes.
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -127,6 +127,6 @@ reserved), preset fields fall back to settings, and the filename rules.
 
 ## Next
 
-After Gate D closes: Pass 5 (M5): hardening, "Copy diagnostics" in settings, a performance
-check on a 10k-line note, complete docs, final VALIDATION, release notes, fresh-vault BRAT
-steps. Ends at Gate E with release 1.0.0.
+When Brian signs off at Gate E: update the release notes from his report, bump to 1.0.0 (same
+code as 0.4.0 plus any fixes), tag and publish. Then post-1.0 work (M6: HTML and Markdown
+adapters, safe-to-share, URI handler, footer) starts only after a Gate F scope approval.

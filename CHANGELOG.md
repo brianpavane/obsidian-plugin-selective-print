@@ -6,6 +6,35 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-07
+
+Release candidate for 1.0.0 (M5: hardening and documentation).
+
+### Added
+
+- **Copy diagnostics** button in settings. The report covers versions, Electron
+  capabilities, adapters, preset load results and a settings summary, with no note content.
+  "Show diagnostics" shows the same report.
+- Debug logging includes parse and render timings.
+
+### Changed
+
+- Diagnostics no longer prints the Obsidian window to an in-memory PDF; capability detection is
+  enough now that one-click PDF is confirmed.
+
+### Fixed
+
+- Preset loading can no longer cause an unhandled error; problems appear in the validation
+  report instead.
+- Opening a preset from **Open print preset…** reports failures with a notice.
+
+### Documentation
+
+- Complete README with fresh-vault BRAT install steps and a 60-second quick start; user guide
+  with a settings and commands reference; troubleshooting; architecture with the pipeline and
+  how to add an adapter; testing with the test file map; final validation table; full manual
+  QA checklist.
+
 ## [0.3.1] - 2026-10-07
 
 ### Changed

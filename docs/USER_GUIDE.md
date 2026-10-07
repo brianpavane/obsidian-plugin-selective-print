@@ -1,7 +1,7 @@
 # User guide
 
-Selective Print prints a note through the macOS print panel, or saves it straight to a PDF
-file in your vault. You choose which sections to include each time.
+Selective Print prints a note through the macOS print panel, or saves it as a PDF in one click.
+You choose which sections to include each time. It works on Obsidian desktop for macOS.
 
 ## Printing a note
 
@@ -86,10 +86,32 @@ expression, for example `regex:^Appendix`.
 Wrap text in `%% print:exclude %%` and `%% /print:exclude %%` to leave it out of every
 printout. The markers are Obsidian comments, so they are invisible in reading view.
 
-## Print settings
+## Settings reference
 
-Paper size, orientation, margins and print style. **Neutral** always prints black on white;
-**Match theme** (experimental) uses your current theme.
+| Setting                            | Default                     | What it does                                                                  |
+| ---------------------------------- | --------------------------- | ----------------------------------------------------------------------------- |
+| Always review before output        | On                          | Open the dialog on every print. Shift-click the icon to skip it once.         |
+| Global exclude list                | `Transcript`                | Headings excluded by default in every note.                                   |
+| Presets folder                     | `Print Presets`             | Where preset notes live.                                                      |
+| Starter presets                    | Button                      | Install missing starters; update the ones you have not edited.                |
+| Validate presets                   | Button                      | Report of preset problems.                                                    |
+| Default output                     | Print                       | Print or PDF for the header icon; preselected in the dialog.                  |
+| Save PDF files to                  | Ask where to save           | Save panel on the Desktop, the Desktop, or the vault.                         |
+| PDF folder in the vault            | (next to the note)          | Only when saving into the vault.                                              |
+| PDF file name                      | `{date} - {title}`          | Variables: `{title}` `{date}` `{datetime}` `{preset}` `{frontmatter.<key>}`.  |
+| Open PDF after saving              | Off                         | Opens the new PDF in your PDF app.                                            |
+| Skip empty sections                | On                          | Default for the dialog.                                                       |
+| Paper size / orientation / margins | Letter / portrait / 0.75 in | Page setup for Print and PDF.                                                 |
+| Print style                        | Neutral                     | Neutral prints black on white; Match theme (experimental) uses your theme.    |
+| Show header icon / ribbon icon     | On / Off                    | Where the print button appears.                                               |
+| Diagnostics                        | Button                      | Copies a report for bug reports, with no note content.                        |
+| Debug logging                      | Off                         | Detailed `[SelectivePrint]` logs in the developer console, including timings. |
+
+## Commands
+
+Print / export current note… · Quick print current note (preset defaults) · Save current note
+as PDF · Validate print presets · Open print preset… · Install / refresh starter presets ·
+Show diagnostics. Assign hotkeys in Settings → Hotkeys.
 
 ## Limitations
 
@@ -97,3 +119,7 @@ Paper size, orientation, margins and print style. **Neutral** always prints blac
   renders them. Planned for 1.3.
 - Content that loads slowly (Dataview, Bases, diagrams) gets up to 8 seconds. If it is still
   loading, a notice tells you some content may be missing.
+- "Remember for this note" stores heading names, so it cannot keep a subheading whose parent is
+  excluded, or tell apart two headings with the same name. A notice says when this happens.
+- One-click PDF uses Electron's `remote` module. If a future Obsidian removes it, PDFs fall
+  back to the print panel automatically.
