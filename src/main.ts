@@ -1,7 +1,8 @@
-import { MarkdownView, Notice, Platform, Plugin, TFile } from "obsidian";
+import { MarkdownView, Notice, Platform, Plugin, TFile, TFolder } from "obsidian";
 import { PLUGIN_NAME } from "./constants";
 import { createLogger, type Logger } from "./logger";
 import { buildDiagnostics, DiagnosticsModal } from "./obsidian/diagnostics";
+import { PackFlow } from "./obsidian/pack-flow";
 import { PrintFlow, type OutputId } from "./obsidian/print-flow";
 import { HeaderActions } from "./obsidian/triggers";
 import { describeStarterSync, noticeError, PresetStore } from "./obsidian/vault-presets";
@@ -20,7 +21,10 @@ import { PdfAdapter } from "./output/pdf";
 import { PrintAdapter } from "./output/print";
 import { VaultPdfIo } from "./obsidian/pdf-io";
 import { migrateSettings, type SelectivePrintSettings } from "./settings";
+import { FolderPickerModal } from "./ui/FolderPickerModal";
+import { promptForText } from "./ui/NamePromptModal";
 import { PresetPickerModal } from "./ui/PresetPickerModal";
+import { parsePackQuery } from "./core/pack";
 import { SettingsTab } from "./ui/SettingsTab";
 import { ValidationModal } from "./ui/ValidationModal";
 
@@ -31,6 +35,7 @@ export default class SelectivePrintPlugin extends Plugin {
   private readonly pendingCleanups = new Set<() => void>();
   private adapters: OutputAdapter[] = [];
   private flow!: PrintFlow;
+  private packs!: PackFlow;
   store!: PresetStore;
   private header: HeaderActions | null = null;
   private ribbon: HTMLElement | null = null;
@@ -73,6 +78,14 @@ export default class SelectivePrintPlugin extends Plugin {
       this.store,
       this.log,
     );
+    this.packs = new PackFlow(
+      this.app,
+      () => this.settings,
+      () => this.adapters,
+      () => printAdapter,
+      this.store,
+      this.log,
+    );
 
     this.addSettingTab(new SettingsTab(this.app, this));
 
@@ -94,6 +107,29 @@ export default class SelectivePrintPlugin extends Plugin {
       name: "Quick print current note (preset defaults)",
       checkCallback: (checking) =>
         this.withActiveNote(checking, (file) => this.print(file, false, "print")),
+    });
+    this.addCommand({
+      id: "print-folder",
+      name: "Print a folder…",
+      callback: () =>
+        new FolderPickerModal(this.app, (folder) => void this.packs.startFolder(folder)).open(),
+    });
+    this.addCommand({
+      id: "print-notes-by-query",
+      name: "Print notes by tag or property…",
+      callback: async () => {
+        const query = await promptForText(this.app, {
+          title: "Print notes by tag or property",
+          label: "Tag or property",
+          action: "Find notes",
+          placeholder: "#meeting or type: meeting",
+          validate: (text) => {
+            const q = parsePackQuery(text);
+            return q.ok ? null : q.error;
+          },
+        });
+        if (query !== null) await this.packs.startQuery(query);
+      },
     });
     this.addCommand({
       id: "validate-presets",
@@ -123,12 +159,37 @@ export default class SelectivePrintPlugin extends Plugin {
 
     this.registerEvent(
       this.app.workspace.on("file-menu", (menu, file) => {
+        if (file instanceof TFolder) {
+          menu.addItem((item) =>
+            item
+              .setTitle("Print folder…")
+              .setIcon("printer")
+              .onClick(() => void this.packs.startFolder(file)),
+          );
+          return;
+        }
         if (!(file instanceof TFile) || file.extension !== "md") return;
         menu.addItem((item) =>
           item
             .setTitle("Print / export…")
             .setIcon("printer")
             .onClick(() => this.print(file, true)),
+        );
+      }),
+    );
+    this.registerEvent(
+      this.app.workspace.on("files-menu", (menu, files) => {
+        const notes: TFile[] = [];
+        for (const f of files) {
+          if (f instanceof TFile && f.extension === "md") notes.push(f);
+          else if (f instanceof TFolder) notes.push(...this.packs.notesInFolder(f, false));
+        }
+        if (notes.length === 0) return;
+        menu.addItem((item) =>
+          item
+            .setTitle("Print selected notes…")
+            .setIcon("printer")
+            .onClick(() => void this.packs.startFiles(notes)),
         );
       }),
     );

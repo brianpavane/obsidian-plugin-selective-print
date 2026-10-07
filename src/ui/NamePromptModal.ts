@@ -6,8 +6,22 @@ export function promptForName(
   title: string,
   validate: (name: string) => string | null,
 ): Promise<string | null> {
+  return promptForText(app, { title, label: "Name", action: "Save", validate });
+}
+
+/** Asks for one line of text. Resolves null on cancel. */
+export function promptForText(
+  app: App,
+  opts: {
+    title: string;
+    label: string;
+    action: string;
+    placeholder?: string;
+    validate: (text: string) => string | null;
+  },
+): Promise<string | null> {
   return new Promise((resolve) => {
-    new NamePromptModal(app, title, validate, resolve).open();
+    new NamePromptModal(app, opts, resolve).open();
   });
 }
 
@@ -17,19 +31,25 @@ class NamePromptModal extends Modal {
 
   constructor(
     app: App,
-    private readonly title: string,
-    private readonly validate: (name: string) => string | null,
+    private readonly opts: {
+      title: string;
+      label: string;
+      action: string;
+      placeholder?: string;
+      validate: (text: string) => string | null;
+    },
     private readonly resolve: (name: string | null) => void,
   ) {
     super(app);
   }
 
   onOpen(): void {
-    this.setTitle(this.title);
+    this.setTitle(this.opts.title);
     const error = this.contentEl.createDiv({ cls: "selective-print-error" });
     let input: HTMLInputElement | null = null;
-    new Setting(this.contentEl).setName("Name").addText((t) => {
+    new Setting(this.contentEl).setName(this.opts.label).addText((t) => {
       input = t.inputEl;
+      if (this.opts.placeholder) t.setPlaceholder(this.opts.placeholder);
       t.onChange((v) => {
         this.value = v;
         error.setText("");
@@ -37,9 +57,9 @@ class NamePromptModal extends Modal {
     });
     const buttons = this.contentEl.createDiv({ cls: "modal-button-container" });
     buttons.createEl("button", { text: "Cancel" }).addEventListener("click", () => this.close());
-    const save = buttons.createEl("button", { text: "Save", cls: "mod-cta" });
+    const save = buttons.createEl("button", { text: this.opts.action, cls: "mod-cta" });
     const submit = (): void => {
-      const problem = this.validate(this.value);
+      const problem = this.opts.validate(this.value);
       if (problem) {
         error.setText(problem);
         return;

@@ -181,3 +181,43 @@ body.selective-print-neutral .frontmatter-container,
 body.selective-print-neutral .metadata-container {
   display: none;
 }
+
+/* Multi-note packs */
+
+.selective-print-pack-cover {
+  break-after: page;
+  page-break-after: always;
+  text-align: center;
+  padding-top: 30vh;
+}
+
+.selective-print-pack-cover h1 {
+  font-size: 2em;
+}
+
+.selective-print-pack-toc {
+  break-after: page;
+  page-break-after: always;
+}
+
+.selective-print-pack-toc a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.selective-print-toc-date {
+  color: #666;
+  margin-left: 0.75em;
+  font-size: 0.9em;
+}
+
+.selective-print-pack-note.is-new-page {
+  break-before: page;
+  page-break-before: always;
+}
+
+.selective-print-note-meta {
+  color: #666;
+  font-size: 9pt;
+  margin: -0.25em 0 1em;
+}

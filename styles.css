@@ -148,3 +148,17 @@
 .selective-print-validation li {
   user-select: text;
 }
+
+/* Pack dialog */
+.selective-print-pack-label {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-3);
+  flex: 1 1 auto;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.selective-print-pack-list .clickable-icon {
+  padding: 0 var(--size-2-2);
+}
