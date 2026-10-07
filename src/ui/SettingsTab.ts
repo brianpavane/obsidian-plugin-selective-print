@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import { DEFAULT_GLOBAL_EXCLUDE } from "../constants";
 import { validateRuleEntry } from "../core/selection";
+import { presetsFolderPath } from "../obsidian/vault-presets";
 import type { Orientation, PaperSize, PrintStyle } from "../settings";
 import type SelectivePrintPlugin from "../main";
 
@@ -53,6 +54,45 @@ export class SettingsTab extends PluginSettingTab {
           await this.plugin.saveSettings();
           this.renderExcludeList(listEl);
         }),
+      );
+
+    new Setting(containerEl).setName("Presets").setHeading();
+    const report = this.plugin.store.report;
+    const folderSetting = new Setting(containerEl)
+      .setName("Presets folder")
+      .setDesc("Vault folder that holds preset notes.")
+      .addText((t) =>
+        t.setValue(s.presetsFolder).onChange(async (v) => {
+          const ok = presetsFolderPath(v) !== null;
+          folderSetting.descEl.setText(
+            ok ? "Vault folder that holds preset notes." : "Must be a folder inside the vault.",
+          );
+          folderSetting.descEl.toggleClass("selective-print-error", !ok);
+          if (!ok) return;
+          s.presetsFolder = v.trim();
+          await this.plugin.saveSettings();
+          await this.plugin.store.reload();
+        }),
+      );
+    new Setting(containerEl)
+      .setName("Starter presets")
+      .setDesc(
+        "Install missing starters and update the ones you have not edited. Edited starters are never overwritten.",
+      )
+      .addButton((b) =>
+        b.setButtonText("Install / refresh").onClick(async () => {
+          await this.plugin.syncStarters("manual");
+          this.display();
+        }),
+      );
+    new Setting(containerEl)
+      .setName("Validate presets")
+      .setDesc(
+        `${report.presets.length} valid, ${report.errors.length} ${report.errors.length === 1 ? "error" : "errors"}, ` +
+          `${report.warnings.length} ${report.warnings.length === 1 ? "warning" : "warnings"}.`,
+      )
+      .addButton((b) =>
+        b.setButtonText("Show report").onClick(() => void this.plugin.showValidation()),
       );
 
     new Setting(containerEl).setName("Output").setHeading();

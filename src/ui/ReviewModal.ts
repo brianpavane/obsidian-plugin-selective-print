@@ -1,4 +1,5 @@
-import { App, Modal, Setting } from "obsidian";
+import { App, Modal, Notice, Setting } from "obsidian";
+import { PLUGIN_NAME } from "../constants";
 import {
   checkState,
   depths,
@@ -10,7 +11,8 @@ import {
   visibleSections,
 } from "../core/dialog-state";
 import { buildJob, isControlProperty, type PrintJob, type PropertiesChoice } from "../core/job";
-import type { Preset } from "../core/presets";
+import { rememberList } from "../core/note-keys";
+import type { NewPresetInput, Preset } from "../core/presets";
 import { finalSelection, findMissingHeadings, resolveDefaults } from "../core/selection";
 import type { CoreWarning, SectionDefault, SectionTree } from "../core/types";
 import type { NoteSnapshot } from "../obsidian/note-source";
@@ -25,11 +27,20 @@ export interface ReviewContext {
   globalExclude: readonly string[];
   skipEmptyDefault: boolean;
   adapters: OutputAdapter[];
+  /** The note's print-exclude list, or null when the note has none. */
+  noteExclude: string[] | null;
+  /** Messages to show in the warnings area (note keys, preset problems). */
+  notices: string[];
+  /** Write print-exclude to the note. Only called when the user clicks "Remember". */
+  remember: (list: string[]) => Promise<void>;
+  /** Create a preset file from the current choices. Resolves false when cancelled. */
+  saveAsPreset: (input: Omit<NewPresetInput, "name">) => Promise<boolean>;
 }
 
 export interface ReviewChoice {
   job: PrintJob;
   adapter: OutputAdapter;
+  preset: Preset;
 }
 
 /**
@@ -54,6 +65,7 @@ export class ReviewModal extends Modal {
   private summaryEl!: HTMLElement;
   private chooserEl!: HTMLElement;
   private optionsEl: HTMLElement | null = null;
+  private infoEl!: HTMLElement;
   private primaryButton!: HTMLButtonElement;
   private readonly depth: Map<string, number>;
   private readonly propertyNames: string[];
@@ -80,6 +92,7 @@ export class ReviewModal extends Modal {
       tree: this.ctx.tree,
       globalExclude: this.ctx.globalExclude,
       preset: this.preset.sections,
+      noteExclude: this.ctx.noteExclude,
     });
     this.defaults = r.defaults;
     this.resolveWarnings = [
@@ -128,6 +141,8 @@ export class ReviewModal extends Modal {
       });
     });
 
+    this.infoEl = contentEl.createDiv({ cls: "selective-print-info" });
+    this.renderInfo();
     this.warningsEl = contentEl.createDiv({ cls: "selective-print-warnings" });
 
     const actions = contentEl.createDiv({ cls: "selective-print-quick-actions" });
@@ -150,6 +165,16 @@ export class ReviewModal extends Modal {
     this.renderOptions();
 
     this.summaryEl = contentEl.createDiv({ cls: "selective-print-summary" });
+
+    const persist = contentEl.createDiv({ cls: "selective-print-persist" });
+    const rememberBtn = persist.createEl("button", {
+      text: "Remember for this note",
+      cls: "mod-muted",
+    });
+    rememberBtn.title = "Save the unchecked sections to this note's print-exclude property";
+    rememberBtn.addEventListener("click", () => void this.remember());
+    const saveBtn = persist.createEl("button", { text: "Save as new preset…", cls: "mod-muted" });
+    saveBtn.addEventListener("click", () => void this.saveAsPreset());
 
     const buttons = contentEl.createDiv({ cls: "modal-button-container" });
     buttons.createEl("button", { text: "Cancel" }).addEventListener("click", () => this.close());
@@ -242,8 +267,11 @@ export class ReviewModal extends Modal {
     this.renderList(focusId);
     const job = this.currentJob();
     this.warningsEl.empty();
-    for (const w of [...this.resolveWarnings, ...job.warnings]) {
-      this.warningsEl.createDiv({ cls: "selective-print-warning", text: w.message });
+    for (const message of [
+      ...this.ctx.notices,
+      ...[...this.resolveWarnings, ...job.warnings].map((w) => w.message),
+    ]) {
+      this.warningsEl.createDiv({ cls: "selective-print-warning", text: message });
     }
     const { included, excluded, emptySkipped } = job.stats;
     this.summaryEl.setText(
@@ -302,9 +330,58 @@ export class ReviewModal extends Modal {
   private submit(): void {
     if (this.submitted || this.primaryButton.disabled) return;
     this.submitted = true;
-    const choice = { job: this.currentJob(), adapter: this.adapter };
+    const choice = { job: this.currentJob(), adapter: this.adapter, preset: this.preset };
     this.close();
     this.onSubmit(choice);
+  }
+
+  private renderInfo(): void {
+    this.infoEl.empty();
+    if (this.ctx.noteExclude === null) return;
+    const list = this.ctx.noteExclude.length ? this.ctx.noteExclude.join(", ") : "nothing";
+    this.infoEl.setText(
+      `This note has remembered choices (print-exclude: ${list}). They replace the preset and global exclusions.`,
+    );
+  }
+
+  private async remember(): Promise<void> {
+    const plan = rememberList(this.ctx.tree, this.included);
+    try {
+      await this.ctx.remember(plan.list);
+    } catch (err) {
+      new Notice(
+        `${PLUGIN_NAME}: could not update the note: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      return;
+    }
+    this.ctx.noteExclude = plan.list;
+    this.applyPreset();
+    this.renderOptions();
+    this.renderInfo();
+    this.refresh();
+    const what = plan.list.length ? plan.list.join(", ") : "nothing (everything included)";
+    new Notice(`${PLUGIN_NAME}: remembered for this note. Excluded: ${what}.`);
+    for (const w of plan.warnings) new Notice(`${PLUGIN_NAME}: ${w.message}`, 8000);
+  }
+
+  private async saveAsPreset(): Promise<void> {
+    const plan = rememberList(this.ctx.tree, this.included);
+    const omit = this.propertyNames.filter((k) => !this.chosenProperties.has(k));
+    const saved = await this.ctx.saveAsPreset({
+      description: `Saved from the print dialog for "${this.ctx.note.title}".`,
+      exclude: plan.list,
+      // The list is complete, so it replaces the global list rather than adding to it.
+      inheritGlobal: false,
+      skipEmpty: this.skipEmpty,
+      includeTitle: this.includeTitle,
+      properties:
+        this.propertiesMode === "choose"
+          ? { mode: "except", list: omit }
+          : { mode: this.propertiesMode, list: [] },
+      excludeCalloutTypes: this.preset.callouts.excludeTypes,
+      inlineMarkers: this.preset.inlineMarkers,
+    });
+    if (saved) for (const w of plan.warnings) new Notice(`${PLUGIN_NAME}: ${w.message}`, 8000);
   }
 
   onClose(): void {

@@ -1,15 +1,25 @@
 import { App, Notice, TFile } from "obsidian";
 import { PLUGIN_NAME } from "../constants";
 import { buildJob, type PrintJob } from "../core/job";
-import { BUILTIN_PRESETS, DEFAULT_PRESET, type Preset } from "../core/presets";
+import { readNoteOverrides } from "../core/note-keys";
+import {
+  defaultPreset,
+  matchPresets,
+  orderForDropdown,
+  presetNameProblem,
+  type Preset,
+} from "../core/presets";
 import { parseSections } from "../core/sections";
 import { finalSelection, resolveDefaults, validateRuleEntry } from "../core/selection";
 import type { Logger } from "../logger";
 import type { OutputAdapter } from "../output/adapter";
 import type { SelectivePrintSettings } from "../settings";
+import { promptForName } from "../ui/NamePromptModal";
 import { ReviewModal } from "../ui/ReviewModal";
 import { readNote, type NoteSnapshot } from "./note-source";
+import { rememberExclusions } from "./note-writes";
 import { renderJob } from "./render";
+import type { PresetStore } from "./vault-presets";
 
 /**
  * One invocation: read the note, compute defaults, optionally show the review dialog,
@@ -20,6 +30,7 @@ export class PrintFlow {
     private readonly app: App,
     private readonly settings: () => SelectivePrintSettings,
     private readonly adapters: () => OutputAdapter[],
+    private readonly store: PresetStore,
     private readonly log: Logger,
   ) {}
 
@@ -30,9 +41,22 @@ export class PrintFlow {
     );
   }
 
-  /** M2: built-in presets only. M3 adds vault presets and matching. */
-  private presets(): { list: Preset[]; initial: Preset } {
-    return { list: [...BUILTIN_PRESETS], initial: DEFAULT_PRESET };
+  private presetsFor(note: NoteSnapshot): { list: Preset[]; initial: Preset; notices: string[] } {
+    const presets = this.store.presets;
+    const match = matchPresets(presets, {
+      path: note.file.path,
+      properties: note.properties,
+      tags: note.tags,
+    });
+    const notices: string[] = [];
+    if (match.warning) notices.push(match.warning);
+    const problems = this.store.report.errors.length;
+    if (problems) {
+      notices.push(
+        `${problems} preset ${problems === 1 ? "problem" : "problems"} found; run "Validate print presets" for details.`,
+      );
+    }
+    return { list: orderForDropdown(presets, match), initial: defaultPreset(match), notices };
   }
 
   async start(file: TFile, opts: { dialog: boolean }): Promise<void> {
@@ -44,7 +68,9 @@ export class PrintFlow {
       const note = await readNote(this.app, file);
       const tree = parseSections(note.source);
       const adapters = await this.availableAdapters();
-      const { list, initial } = this.presets();
+      const overrides = readNoteOverrides(note.properties);
+      const { list, initial, notices } = this.presetsFor(note);
+      notices.push(...overrides.warnings.map((w) => w.message));
       const settings = this.settings();
 
       if (opts.dialog) {
@@ -58,8 +84,25 @@ export class PrintFlow {
             globalExclude: this.globalExclude(),
             skipEmptyDefault: settings.skipEmpty,
             adapters,
+            noteExclude: overrides.noteExclude,
+            notices,
+            remember: (exclude) => rememberExclusions(this.app, file, exclude),
+            saveAsPreset: async (input) => {
+              const name = await promptForName(this.app, "Save as new preset", (n) =>
+                presetNameProblem(n, this.store.presets),
+              );
+              if (name === null) return false;
+              try {
+                const created = await this.store.createPreset({ ...input, name });
+                new Notice(`${PLUGIN_NAME}: saved preset "${name}" to ${created.path}.`);
+                return true;
+              } catch (err) {
+                this.fail("could not save the preset", err);
+                return false;
+              }
+            },
           },
-          (choice) => void this.output(note, choice.job, choice.adapter),
+          (choice) => void this.output(note, choice.job, choice.adapter, choice.preset),
         ).open();
         return;
       }
@@ -68,6 +111,7 @@ export class PrintFlow {
         tree,
         globalExclude: this.globalExclude(),
         preset: initial.sections,
+        noteExclude: overrides.noteExclude,
       });
       const job = buildJob({
         tree,
@@ -79,16 +123,23 @@ export class PrintFlow {
         excludeCalloutTypes: initial.callouts.excludeTypes,
         properties: {
           values: note.properties,
-          mode: initial.properties.mode === "none" ? "none" : "all",
-          chosen: [],
+          mode: initial.properties.mode === "except" ? "choose" : initial.properties.mode,
+          chosen: Object.keys(note.properties).filter(
+            (k) => !initial.properties.list.some((x) => x.toLowerCase() === k.toLowerCase()),
+          ),
         },
       });
-      for (const w of [...r.warnings, ...job.warnings]) new Notice(`${PLUGIN_NAME}: ${w.message}`);
+      for (const message of [
+        ...notices,
+        ...[...r.warnings, ...job.warnings].map((w) => w.message),
+      ]) {
+        new Notice(`${PLUGIN_NAME}: ${message}`);
+      }
       const adapter = adapters[0];
       if (!adapter) throw new Error("no output adapter is available");
-      await this.output(note, job, adapter);
+      await this.output(note, job, adapter, initial);
     } catch (err) {
-      this.fail(err);
+      this.fail("could not print", err);
     }
   }
 
@@ -102,7 +153,12 @@ export class PrintFlow {
     return out;
   }
 
-  private async output(note: NoteSnapshot, job: PrintJob, adapter: OutputAdapter): Promise<void> {
+  private async output(
+    note: NoteSnapshot,
+    job: PrintJob,
+    adapter: OutputAdapter,
+    preset: Preset,
+  ): Promise<void> {
     let rendered: Awaited<ReturnType<typeof renderJob>> | null = null;
     try {
       rendered = await renderJob(this.app, job, note.file.path);
@@ -118,20 +174,22 @@ export class PrintFlow {
           content: rendered.content,
           matchTheme: s.printStyle === "match-theme",
         },
-        { paper: s.paper, orientation: s.orientation, marginsIn: s.marginsIn },
+        {
+          paper: preset.output.paper ?? s.paper,
+          orientation: preset.output.orientation ?? s.orientation,
+          marginsIn: s.marginsIn,
+        },
       );
       if (!result.ok) new Notice(`${PLUGIN_NAME}: ${result.message ?? `${adapter.label} failed.`}`);
     } catch (err) {
-      this.fail(err);
+      this.fail("could not print", err);
     } finally {
       rendered?.dispose();
     }
   }
 
-  private fail(err: unknown): void {
-    this.log.error("print failed", err);
-    new Notice(
-      `${PLUGIN_NAME}: could not print: ${err instanceof Error ? err.message : String(err)}`,
-    );
+  private fail(what: string, err: unknown): void {
+    this.log.error(what, err);
+    new Notice(`${PLUGIN_NAME}: ${what}: ${err instanceof Error ? err.message : String(err)}`);
   }
 }

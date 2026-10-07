@@ -4,10 +4,13 @@ import { createLogger, type Logger } from "./logger";
 import { buildDiagnostics, DiagnosticsModal } from "./obsidian/diagnostics";
 import { PrintFlow } from "./obsidian/print-flow";
 import { HeaderActions } from "./obsidian/triggers";
+import { describeStarterSync, noticeError, PresetStore } from "./obsidian/vault-presets";
 import type { OutputAdapter } from "./output/adapter";
 import { PrintAdapter } from "./output/print";
 import { migrateSettings, type SelectivePrintSettings } from "./settings";
+import { PresetPickerModal } from "./ui/PresetPickerModal";
 import { SettingsTab } from "./ui/SettingsTab";
+import { ValidationModal } from "./ui/ValidationModal";
 
 /** Plugin entry: wiring only. Business logic lives in src/core (CLAUDE.md section 3.6). */
 export default class SelectivePrintPlugin extends Plugin {
@@ -16,6 +19,7 @@ export default class SelectivePrintPlugin extends Plugin {
   private readonly pendingCleanups = new Set<() => void>();
   private adapters: OutputAdapter[] = [];
   private flow!: PrintFlow;
+  store!: PresetStore;
   private header: HeaderActions | null = null;
   private ribbon: HTMLElement | null = null;
 
@@ -29,10 +33,13 @@ export default class SelectivePrintPlugin extends Plugin {
     }
 
     this.adapters = [new PrintAdapter(this.log, this.pendingCleanups)];
+    this.store = new PresetStore(this.app, () => this.settings.presetsFolder, this.log);
+    this.store.watch(this);
     this.flow = new PrintFlow(
       this.app,
       () => this.settings,
       () => this.adapters,
+      this.store,
       this.log,
     );
 
@@ -47,6 +54,26 @@ export default class SelectivePrintPlugin extends Plugin {
       id: "quick-print-current-note",
       name: "Quick print current note (preset defaults)",
       checkCallback: (checking) => this.withActiveNote(checking, (file) => this.print(file, false)),
+    });
+    this.addCommand({
+      id: "validate-presets",
+      name: "Validate print presets",
+      callback: () => void this.showValidation(),
+    });
+    this.addCommand({
+      id: "open-preset",
+      name: "Open print preset…",
+      callback: () => {
+        const files = this.store.files();
+        if (files.length === 0)
+          new Notice(`${PLUGIN_NAME}: no preset files in "${this.settings.presetsFolder}".`);
+        else new PresetPickerModal(this.app, files).open();
+      },
+    });
+    this.addCommand({
+      id: "install-starter-presets",
+      name: "Install / refresh starter presets",
+      callback: () => void this.syncStarters("manual"),
     });
     this.addCommand({
       id: "show-diagnostics",
@@ -85,7 +112,10 @@ export default class SelectivePrintPlugin extends Plugin {
         if (view.file) this.print(view.file, this.settings.alwaysReview && !evt.shiftKey);
       },
     );
-    this.app.workspace.onLayoutReady(() => this.header?.refresh());
+    this.app.workspace.onLayoutReady(() => {
+      this.header?.refresh();
+      void this.store.reload().then(() => this.syncStarters("auto"));
+    });
     this.registerEvent(this.app.workspace.on("layout-change", () => this.header?.refresh()));
     this.registerEvent(this.app.workspace.on("file-open", () => this.header?.refresh()));
     this.updateRibbon();
@@ -109,6 +139,33 @@ export default class SelectivePrintPlugin extends Plugin {
     await this.saveData(persisted);
     this.header?.refresh();
     this.updateRibbon();
+  }
+
+  async showValidation(): Promise<void> {
+    await this.store.reload();
+    const folder = this.store.folder();
+    if (folder === null) {
+      new Notice(`${PLUGIN_NAME}: the presets folder setting points outside the vault.`);
+      return;
+    }
+    new ValidationModal(this.app, folder, this.store.report).open();
+  }
+
+  /** "auto" runs on every load: installs new starters and upgrades unmodified ones. */
+  async syncStarters(mode: "auto" | "manual"): Promise<void> {
+    try {
+      const { actions, installed } = await this.store.syncStarters(
+        this.settings.installedStarters,
+        mode,
+      );
+      this.settings.installedStarters = installed;
+      await this.saveSettings();
+      const wrote = actions.some((a) => a.kind !== "skip");
+      if (mode === "manual" || wrote) new Notice(describeStarterSync(actions));
+      if (wrote) await this.store.reload();
+    } catch (err) {
+      noticeError("could not install starter presets", err);
+    }
   }
 
   private print(file: TFile, dialog: boolean): void {

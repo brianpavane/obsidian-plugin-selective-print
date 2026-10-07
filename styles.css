@@ -127,3 +127,24 @@
 .selective-print-error {
   color: var(--text-error);
 }
+
+.selective-print-info:empty {
+  display: none;
+}
+
+.selective-print-info {
+  font-size: var(--font-ui-small);
+  color: var(--text-accent);
+  margin-bottom: var(--size-4-2);
+}
+
+.selective-print-persist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2-2);
+  margin-top: var(--size-4-2);
+}
+
+.selective-print-validation li {
+  user-select: text;
+}
