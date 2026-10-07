@@ -29,5 +29,16 @@ export default defineConfig([
       "obsidianmd/hardcoded-config-path": "off",
     },
   },
+  {
+    // Pure core (CLAUDE.md section 3.6): no Obsidian, Electron or DOM access.
+    files: ["src/core/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        { paths: ["obsidian", "electron"], patterns: ["../obsidian/*", "../ui/*", "../output/*"] },
+      ],
+      "no-restricted-globals": ["error", "window", "document", "navigator", "activeWindow", "activeDocument"],
+    },
+  },
   prettier,
 ]);
