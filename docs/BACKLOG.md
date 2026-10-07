@@ -21,5 +21,9 @@ post-1.0 work needs a Gate F scope approval (`CLAUDE.md` section 4).
 
 - Adopt the declarative settings API (Obsidian 1.13+) so settings appear in settings search.
   Needs `minAppVersion` 1.13 or a fallback.
+- "Forget remembered choices" button in the dialog (today: delete the `print-exclude` property).
+- Preset tie-break priority (for example a `priority:` key) so several presets can match
+  `type: meeting` without the alphabetical first one becoming the default. Schema change;
+  needs a gate.
 - Optional "Copy as filename" setting: propose `{date} - {title}` instead of the note title in
   the print panel's PDF dropdown.

@@ -6,6 +6,33 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-07
+
+Presets (M3). Not yet confirmed on macOS by the owner; see the release notes.
+
+### Added
+
+- Presets as Markdown files in a vault folder (default `Print Presets`), schema
+  `preset-version: 1`. They load on startup and reload when changed.
+- Matching by property, tag, folder and filename, with specificity ordering; every match is
+  listed in the dialog, with the most specific selected.
+- Note properties `print-preset` (force a preset) and `print-exclude` (complete exclusion
+  list; replaces preset and global lists). The dialog tags note exclusions "note".
+- Dialog: **Remember for this note** (writes `print-exclude` via `processFrontMatter`) and
+  **Save as new preset…**. Drift warnings ("not found: X") for preset headings.
+- Validation: errors and warnings per file and field; unreadable YAML reported. Command
+  **Validate print presets** and a summary in settings.
+- Starter presets installed on first run (Meeting notes, Meeting recap, Meeting full (with
+  transcript), Meeting tracker, Weekly review). Upgrades never overwrite edited starters.
+  Command and button **Install / refresh starter presets**.
+- Commands **Open print preset…** and **Install / refresh starter presets**.
+- Settings: presets folder, starters, validation report.
+- Presets' `output.paper` and `output.orientation` override the settings.
+
+### Changed
+
+- `minAppVersion` raised to 1.5.7 (vault file lookup APIs).
+
 ## [0.1.0] - 2026-10-07
 
 First usable build (M2). Not yet confirmed on macOS by the owner; see the release notes.

@@ -17,6 +17,21 @@ list and an image.
 3. Print again and check Transcript. The transcript is included this time.
 4. Anything confusing, ugly or broken in the dialog or the printout? Tell me in plain words.
 
+## Quick try-list (Gate C, 0.2.0)
+
+1. After updating, check that a **Print Presets** folder appeared with five starter notes.
+   Open "Meeting notes" and read it.
+2. Open a real meeting note (with `type: meeting`) and click the printer icon. The preset
+   menu shows **Meeting notes** selected, and Transcript is unchecked. Do the other headings
+   in the starters (Agenda, Notes, Meeting Summary, Decisions, Action items) match your real
+   notes? Any "not found" warnings?
+3. Switch the preset to **Meeting recap**. Agenda and Notes become unchecked.
+4. Uncheck something and click **Remember for this note**. The note gains a `print-exclude`
+   property. Reopen the dialog: the same sections are unchecked, tagged "note".
+5. Click **Save as new preset…**, give it a name, and check that a new file appears in Print
+   Presets.
+6. Try a weekly review and a meeting tracker note. Is the right starter selected?
+
 ## Full checklist (items 1-8, M2)
 
 | #   | Steps                                                                                                                                                                                                           | Expected                                                                                                                                                                                        |

@@ -2,14 +2,14 @@
 
 ## Assumed versions
 
-| Component              | Version                                                                                              | Source                                                                                                                          |
-| ---------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Obsidian (Brian's Mac) | 1.14.4                                                                                               | Brian, Gate 0 (2026-10-07)                                                                                                      |
-| macOS                  | 26.7                                                                                                 | Brian, Gate 0 (2026-10-07)                                                                                                      |
-| `obsidian` typings     | 1.13.1                                                                                               | Latest on npm at M0. Older than the app; APIs are checked against these typings.                                                |
-| Electron / Chromium    | unknown                                                                                              | To be recorded from Spike B diagnostics at Gate A                                                                               |
-| `minAppVersion`        | 1.2.3                                                                                                | Oldest version with every API used, according to `eslint-plugin-obsidianmd` (`no-unsupported-api`). Only 1.14.4 is ever tested. |
-| Toolchain              | TypeScript 6.0.3, esbuild 0.28, ESLint 9 + `eslint-plugin-obsidianmd` 0.4.2, Vitest 5, Node 24 in CI | TypeScript 7 is out of typescript-eslint's supported range; ESLint 10 is not supported by the Obsidian ruleset.                 |
+| Component              | Version                                                                                              | Source                                                                                                                                                               |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Obsidian (Brian's Mac) | 1.14.4                                                                                               | Brian, Gate 0 (2026-10-07)                                                                                                                                           |
+| macOS                  | 26.7                                                                                                 | Brian, Gate 0 (2026-10-07)                                                                                                                                           |
+| `obsidian` typings     | 1.13.1                                                                                               | Latest on npm at M0. Older than the app; APIs are checked against these typings.                                                                                     |
+| Electron / Chromium    | unknown                                                                                              | To be recorded from Spike B diagnostics at Gate A                                                                                                                    |
+| `minAppVersion`        | 1.5.7                                                                                                | Oldest version with every API used (`getFileByPath`, `getFolderByPath`), according to `eslint-plugin-obsidianmd` (`no-unsupported-api`). Only 1.14.4 is ever tested. |
+| Toolchain              | TypeScript 6.0.3, esbuild 0.28, ESLint 9 + `eslint-plugin-obsidianmd` 0.4.2, Vitest 5, Node 24 in CI | TypeScript 7 is out of typescript-eslint's supported range; ESLint 10 is not supported by the Obsidian ruleset.                                                      |
 
 ## Pipeline
 

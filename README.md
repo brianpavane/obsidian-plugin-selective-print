@@ -3,9 +3,9 @@
 Print notes and export them to PDF, choosing which sections to include each time. A note's
 `Transcript` section is left out by default, and you can opt back in when you print.
 
-> **Status: 0.1.0, the first usable build.** Print with section selection is in place, but
-> not yet confirmed on macOS (see the release notes). Presets arrive in 0.2.0 and one-click PDF
-> in 0.3.0.
+> **Status: 0.2.0.** Print with section selection, plus presets stored as notes in your vault.
+> Not yet confirmed on macOS for daily use (see the release notes). One-click PDF arrives in
+> 0.3.0.
 
 - **Platform:** Obsidian desktop on **macOS only**.
 - **Privacy:** no network access, telemetry or accounts.
@@ -26,7 +26,8 @@ Print notes and export them to PDF, choosing which sections to include each time
 3. Click **Print**. To make a PDF, choose **PDF → Save as PDF** in the macOS print panel.
 
 Shift-click the icon to print with the defaults and skip the dialog. Edit the default exclusions
-in Settings → Selective Print → Global exclude list.
+in Settings → Selective Print → Global exclude list. Presets in the `Print Presets` folder set
+defaults per kind of note; see [Presets](docs/PRESETS.md).
 
 ## Supported outputs
 

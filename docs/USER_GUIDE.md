@@ -32,11 +32,26 @@ The review dialog opens. Adjust it if needed and click **Print**.
 - **Select all / Select none / Reset / Invert:** quick changes. **Reset** returns to the defaults.
 - **Include note title**, **Include properties** (None, All, or Choose… to pick properties) and
   **Skip empty sections**.
-- **Preset:** **Default** applies the global exclude list. **Everything** includes all sections.
-  Presets you define arrive in 0.2.0.
+- **Preset:** presets that match this note come first, with the most specific selected.
+  Then come your other presets, **Default** (global exclude list) and **Everything** (all
+  sections). Switching presets resets the checklist to that preset's defaults. See
+  [Presets](PRESETS.md).
+- **Remember for this note:** saves the unchecked headings to the note's `print-exclude`
+  property, so they are the defaults next time. **Save as new preset…** saves the current
+  choices as a preset file.
 - Keyboard: Tab moves between controls, Space toggles a checkbox, Enter prints, Esc cancels.
 
-Your choices apply to this print only; nothing is saved to the note.
+Your choices apply to this print only. The note changes only when you click **Remember for
+this note**.
+
+## Presets and per-note settings
+
+Presets live as notes in the `Print Presets` folder; starters are installed on first run.
+A note can force a preset with the `print-preset` property, or list its own exclusions in
+`print-exclude`. See [Presets](PRESETS.md) for the format, matching rules and examples.
+
+Commands: **Validate print presets**, **Open print preset…**, **Install / refresh starter
+presets**.
 
 ## Global exclude list
 

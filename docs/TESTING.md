@@ -46,5 +46,8 @@ and reference it from a test. If it is a note fixture, add it to the round-trip 
 | `presets/missing-keys.md`, `wrong-types.md`, `unknown-keys.md`, `bad-regex.md`, `future-version.md` | Validation errors and warnings                                                                       |
 | `presets/duplicate-a.md`, `duplicate-b.md`                                                          | Duplicate names (case-insensitive)                                                                   |
 
+Bundled starters (`starters/*.md`) are tested too: they must validate cleanly, match the
+generated meeting fixture, and have no drift against it (`test/starters.test.ts`).
+
 Generated in tests rather than stored as files: the 10k+ line transcript (performance), the
 property-based round-trip documents (`fast-check`), and filename template cases.
