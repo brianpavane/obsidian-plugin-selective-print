@@ -1,7 +1,7 @@
 # Spike results (M0, Gate A)
 
-Status: **built, not yet run on macOS.** Nothing on this page is verified until Brian reports
-results. Fill in the "Result" column and send it back, or paste your answers into chat.
+Status: **closed at Gate A (2026-10-07).** Brian reported A1-A3 passing on Obsidian 1.14.4 /
+macOS 26.7. The remaining steps were waived (see Observations).
 
 ## What the spikes answer
 
@@ -65,4 +65,10 @@ Developer alternative: `npm ci && npm run build`, then symlink the repo to
 
 ## Observations
 
-_To be filled from Brian's report._
+- 2026-10-07, Brian: "that seemed to work, at least through A3". The iframe print opens the
+  macOS print panel and the PDF dropdown works. The proposed filename was not reported.
+- A4-A7, B1-B2 and C1 were not run (Brian's choice: test by using the plugin). Consequences:
+  - Print adapter (M2) uses the sandboxed iframe path from Spike A.
+  - Cleanup does not rely on `afterprint` alone: each new print cleans up the previous frame.
+  - Spike B's question (`remote` / `printToPDF`) is answered at runtime by the M4 PDF adapter,
+    which falls back to the print dialog when unavailable.

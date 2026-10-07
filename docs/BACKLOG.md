@@ -19,4 +19,7 @@ post-1.0 work needs a Gate F scope approval (`CLAUDE.md` section 4).
 
 ## New ideas
 
-_None yet._
+- Adopt the declarative settings API (Obsidian 1.13+) so settings appear in settings search.
+  Needs `minAppVersion` 1.13 or a fallback.
+- Optional "Copy as filename" setting: propose `{date} - {title}` instead of the note title in
+  the print panel's PDF dropdown.

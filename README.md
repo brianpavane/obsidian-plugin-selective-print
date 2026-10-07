@@ -3,15 +3,16 @@
 Print notes and export them to PDF, choosing which sections to include each time. A note's
 `Transcript` section is left out by default, and you can opt back in when you print.
 
-> **Status: pre-release (Pass 1: scaffold, feasibility spikes and core engine).** No features
-> for daily use yet. The first BRAT build is planned for 0.1.0.
+> **Status: 0.1.0, the first usable build.** Print with section selection is in place, but
+> not yet confirmed on macOS (see the release notes). Presets arrive in 0.2.0 and one-click PDF
+> in 0.3.0.
 
 - **Platform:** Obsidian desktop on **macOS only**.
 - **Privacy:** no network access, telemetry or accounts.
 - **Distribution:** [BRAT](https://github.com/TfTHacker/obsidian42-brat) from this repository's
   GitHub releases.
 
-## Install with BRAT (from 0.1.0)
+## Install with BRAT
 
 1. Install and enable the BRAT community plugin.
 2. In BRAT, choose **Add beta plugin** and enter
@@ -20,8 +21,12 @@ Print notes and export them to PDF, choosing which sections to include each time
 
 ## Quick start
 
-Placeholder until 0.1.0: open a note, click the print icon in the note header, review the
-section checklist (Transcript is unchecked), and click **Print**.
+1. Open a note and click the **printer icon** at the top right.
+2. Review the section checklist. `Transcript` is unchecked by default; check it to include it.
+3. Click **Print**. To make a PDF, choose **PDF → Save as PDF** in the macOS print panel.
+
+Shift-click the icon to print with the defaults and skip the dialog. Edit the default exclusions
+in Settings → Selective Print → Global exclude list.
 
 ## Supported outputs
 
