@@ -333,3 +333,41 @@ describe("matching and specificity", () => {
     ]);
   });
 });
+
+describe("presetFrontmatter (Save as new preset)", () => {
+  it("produces frontmatter that validates back to the same choices", async () => {
+    const { presetFrontmatter, presetNameProblem } = await import("../src/core/presets");
+    const fm = presetFrontmatter({
+      name: "  My recap ",
+      description: "From the dialog",
+      appliesTo: [
+        [{ kind: "property", property: "type", equals: "meeting" }],
+        [
+          { kind: "tag", tag: "x" },
+          { kind: "folder", folder: "F" },
+        ],
+        [{ kind: "filename", pattern: "A*" }],
+      ],
+      exclude: ["Agenda", "Transcript"],
+      inheritGlobal: false,
+      skipEmpty: true,
+      includeTitle: false,
+      properties: { mode: "except", list: ["attendees"] },
+    });
+    const v = validatePreset(fm, "Print Presets/My recap.md");
+    expect(v.errors).toEqual([]);
+    expect(v.warnings).toEqual([]);
+    expect(v.preset).toMatchObject({
+      name: "My recap",
+      description: "From the dialog",
+      sections: { inheritGlobal: false, exclude: ["Agenda", "Transcript"], skipEmpty: true },
+      includeTitle: false,
+      properties: { mode: "except", list: ["attendees"] },
+      inlineMarkers: true,
+    });
+    expect(v.preset?.appliesTo).toHaveLength(3);
+    expect(presetNameProblem(" ", [])).toBe("Enter a name.");
+    expect(presetNameProblem("everything", [])).toMatch(/already exists/);
+    expect(presetNameProblem("New", [])).toBeNull();
+  });
+});

@@ -508,3 +508,64 @@ export function orderForDropdown(presets: readonly Preset[], match: MatchResult)
 export function defaultPreset(match: MatchResult): Preset {
   return match.matches[0]?.preset ?? DEFAULT_PRESET;
 }
+
+export interface NewPresetInput {
+  name: string;
+  description?: string;
+  appliesTo?: MatcherEntry[];
+  exclude: readonly string[];
+  inheritGlobal: boolean;
+  skipEmpty: boolean;
+  includeTitle: boolean;
+  properties: { mode: PropertiesMode; list: readonly string[] };
+  excludeCalloutTypes?: readonly string[];
+  inlineMarkers?: boolean;
+}
+
+function matcherToYaml(entry: MatcherEntry): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const c of entry) {
+    if (c.kind === "property") {
+      out.property = c.property;
+      out.equals = c.equals;
+    } else if (c.kind === "tag") out.tag = c.tag;
+    else if (c.kind === "folder") out.folder = c.folder;
+    else out["filename-matches"] = c.pattern;
+  }
+  return out;
+}
+
+/**
+ * Frontmatter object for a new preset file, in schema order. The Obsidian layer serializes it
+ * with stringifyYaml. `validatePreset` accepts every object this returns (tested).
+ */
+export function presetFrontmatter(input: NewPresetInput): Record<string, unknown> {
+  const fm: Record<string, unknown> = {
+    [PRESET_MARKER_KEY]: true,
+    "preset-version": PRESET_VERSION,
+    name: input.name.trim(),
+  };
+  if (input.description) fm.description = input.description;
+  fm["applies-to"] = (input.appliesTo ?? []).map(matcherToYaml);
+  fm.sections = {
+    "inherit-global": input.inheritGlobal,
+    exclude: [...input.exclude],
+    "skip-empty": input.skipEmpty,
+  };
+  fm["include-title"] = input.includeTitle;
+  fm.properties = { mode: input.properties.mode, list: [...input.properties.list] };
+  fm.callouts = { "exclude-types": [...(input.excludeCalloutTypes ?? [])] };
+  fm["inline-markers"] = input.inlineMarkers ?? true;
+  return fm;
+}
+
+/** Problem with a proposed preset name, or null when it can be used. */
+export function presetNameProblem(name: string, existing: readonly Preset[]): string | null {
+  const trimmed = name.trim();
+  if (trimmed === "") return "Enter a name.";
+  const all = [...existing, ...BUILTIN_PRESETS];
+  if (all.some((p) => p.name.toLowerCase() === trimmed.toLowerCase())) {
+    return `A preset named "${trimmed}" already exists.`;
+  }
+  return null;
+}
