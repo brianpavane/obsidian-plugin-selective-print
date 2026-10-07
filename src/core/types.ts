@@ -62,7 +62,9 @@ export interface CoreWarning {
     | "invalid-rule"
     | "unmatched-marker-start"
     | "unmatched-marker-end"
-    | "filename-variable";
+    | "filename-variable"
+    | "note-key"
+    | "remember-lossy";
   message: string;
   line?: number;
 }
