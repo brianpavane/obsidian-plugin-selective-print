@@ -34,7 +34,8 @@ here from Brian's reports.
 
 ## Manual QA log
 
-| Date       | Obsidian | macOS | Plugin | Item                                 | Result                                                   |
-| ---------- | -------- | ----- | ------ | ------------------------------------ | -------------------------------------------------------- |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.1.0  | Print works; skip empty on/off works | pass                                                     |
-| 2026-10-07 | 1.14.4   | 26.7  | 0.0.1  | Spike A1-A3                          | pass (reported as "seemed to work, at least through A3") |
+| Date       | Obsidian | macOS | Plugin | Item                                 | Result                                                    |
+| ---------- | -------- | ----- | ------ | ------------------------------------ | --------------------------------------------------------- |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.2.0  | Gate C try-list and decisions        | "All good to me" (general; items not reported one by one) |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.1.0  | Print works; skip empty on/off works | pass                                                      |
+| 2026-10-07 | 1.14.4   | 26.7  | 0.0.1  | Spike A1-A3                          | pass (reported as "seemed to work, at least through A3")  |
