@@ -102,7 +102,7 @@ export class PrintAdapter implements OutputAdapter {
 }
 
 /** The CSS currently applied to the Obsidian window (theme and snippets), for "Match theme". */
-function themeCss(): string {
+export function themeCss(): string {
   const parts: string[] = [];
   for (const sheet of Array.from(document.styleSheets)) {
     try {
