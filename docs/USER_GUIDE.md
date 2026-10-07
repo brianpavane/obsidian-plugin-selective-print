@@ -1,8 +1,7 @@
 # User guide
 
-Selective Print prints a note through the macOS print panel. You choose which sections to
-include each time. Use **PDF → Save as PDF** in the print panel to make a PDF. One-click PDF
-arrives in 0.3.0.
+Selective Print prints a note through the macOS print panel, or saves it straight to a PDF
+file in your vault. You choose which sections to include each time.
 
 ## Printing a note
 
@@ -52,6 +51,20 @@ A note can force a preset with the `print-preset` property, or list its own excl
 
 Commands: **Validate print presets**, **Open print preset…**, **Install / refresh starter
 presets**.
+
+## Saving a PDF
+
+Run **Save current note as PDF**, or choose **PDF** in the dialog's **Output** menu. You can
+also set **Default output** to PDF in settings so that the header icon saves PDFs.
+
+- The file goes next to the note, or into the **PDF folder** from settings or the preset.
+- It is named by the **PDF file name** template (default `{date} - {title}`).
+- Existing files are never overwritten: a second save adds ` (2)`.
+- **Open PDF after saving** opens the new file in your PDF app.
+
+One-click PDF relies on a part of Electron that some Obsidian versions do not offer. When it is
+unavailable, or anything goes wrong, a notice tells you why and the print dialog opens
+instead. Choose **PDF → Save as PDF** there.
 
 ## Global exclude list
 

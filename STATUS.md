@@ -1,31 +1,29 @@
 # STATUS
 
-- Version: 0.2.0 Pass: 3 Milestone: M3 complete
-- Gate: C State: closed (2026-10-07); Pass 4 in progress
+- Version: 0.3.0 Pass: 4 Milestone: M4 complete
+- Gate: D State: **open: waiting on Brian**
 
 ## Done
 
-- Pass 1 (M0 + M1): scaffold, spikes, pure core. Gate A closed 2026-10-07.
-- Pass 2 (M2): dialog, Print adapter, settings, header icon. Release 0.1.0. Gate B closed
+- Pass 1 (M0 + M1), Pass 2 (M2, 0.1.0), Pass 3 (M3, 0.2.0). Gates A, B and C closed on
   2026-10-07.
-- Pass 3 (M3): presets as vault files (load, watch, validate), matching with specificity,
-  `print-preset` / `print-exclude`, Remember for this note, Save as new preset, starters with
-  upgrade rules, Validate / Open preset / Install starters commands, presets settings.
-  142 tests; core coverage 100% lines. Release 0.2.0 published for BRAT.
+- Pass 4 (M4): PDF adapter through the Electron bridge (hidden window, JavaScript disabled),
+  `%PDF-` check, non-overwriting vault write, filename templates, PDF folder, open after save,
+  automatic fallback to Print with a notice, Save current note as PDF command, Output menu
+  driven by `isAvailable()`. 157 tests (adapter registry, fallback and PDF failure paths with
+  fakes). Release 0.3.0 published for BRAT.
 
 ## In progress
 
-Nothing. Stopped at Gate C.
+Nothing. Stopped at Gate D.
 
 ## Waiting on Brian
 
-1. Update to 0.2.0 and try the Gate C list in `docs/MANUAL_QA.md` (6 items).
-2. **Verify the starters' heading names against your real notes** (Meeting Summary, Agenda,
-   Notes, Decisions, Action items, Transcript). Tell me the real names, or send the anonymized
-   samples.
-3. **Schema decision:** approve `preset-version: 1` as described in `docs/PRESETS.md`. After
-   this gate it is frozen; later changes need a migration and a gate.
-4. Decide on the starter matcher deviation below (keep, or change).
+1. Update to 0.3.0 and try the Gate D list in `docs/MANUAL_QA.md` (5 items). Most important:
+   did one-click PDF save a file, or did it fall back to the print dialog? This answers the
+   old Spike B question.
+2. Is the fallback message clear?
+3. Decide: keep "Open PDF after saving"?
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -38,6 +36,13 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Claude: the PDF adapter's temporary HTML file is written inside the vault, in the
+  plugin folder (`.obsidian/plugins/selective-print/.print-tmp-*.html`), not the system temp
+  folder. This avoids writing outside the vault (CLAUDE.md section 5). It is removed after
+  every run and on load.
+- 2026-10-07, Claude: "open in Preview" uses `shell.openPath`, which opens the default PDF app
+  (Preview unless changed).
 
 - 2026-10-07, Brian: Gate C closed ("All good to me") in reply to the Gate C list and
   decisions. Approved: `preset-version: 1` is now **frozen** (changes need a migration and a
@@ -94,6 +99,9 @@ reserved), preset fields fall back to settings, and the filename rules.
 ## Known issues
 
 - Unverified on macOS (Gate B): everything in M2 except the iframe print path itself.
+- One-click PDF depends on Electron `remote`, which is deprecated upstream and still
+  unverified on Obsidian 1.14.4. The fallback is automatic.
+- PDF: remote (http) images are not inlined; the PDF window loads them as Obsidian does.
 - Whether `afterprint` fires on Cancel is unknown (spike A4 was waived). Mitigation: each new
   print cleans up the previous print frame, and a 5-minute timer is the fallback.
 - "Match theme" is experimental: Obsidian's own print CSS may interfere.
@@ -107,6 +115,6 @@ reserved), preset fields fall back to settings, and the filename rules.
 
 ## Next
 
-After Gate C closes: Pass 4 (M4): one-click PDF through Electron (`printToPDF`) when it is
-available, otherwise a fallback to the print dialog with a notice; filename templates;
-optional open in Preview. Ends at Gate D with release 0.3.0.
+After Gate D closes: Pass 5 (M5): hardening, "Copy diagnostics" in settings, a performance
+check on a 10k-line note, complete docs, final VALIDATION, release notes, fresh-vault BRAT
+steps. Ends at Gate E with release 1.0.0.

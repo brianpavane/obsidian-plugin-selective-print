@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-07
+
+One-click PDF (M4). Not yet confirmed on macOS by the owner; see the release notes.
+
+### Added
+
+- PDF adapter: renders the note in a hidden Electron window (JavaScript disabled), checks the
+  `%PDF-` header and saves into the vault. The file goes next to the note or into the PDF
+  folder, named by the file name template; existing files are never overwritten (` (2)`).
+- Automatic fallback: when one-click PDF is unavailable or fails, a notice explains why and
+  the print dialog opens.
+- Command **Save current note as PDF**. The dialog's Output menu lists PDF when available.
+- Settings: default output, PDF folder, PDF file name (with a live example), open PDF after
+  saving.
+- Vault images are inlined into the PDF. The temporary HTML file lives in the plugin folder
+  and is always removed; crash leftovers are cleaned on load.
+
+### Changed
+
+- **Quick print** always prints, regardless of the default output.
+
+### Fixed
+
+- `docs/ARCHITECTURE.md` module table, which had missed the M2 and M3 updates.
+
 ## [0.2.0] - 2026-10-07
 
 Presets (M3). Not yet confirmed on macOS by the owner; see the release notes.

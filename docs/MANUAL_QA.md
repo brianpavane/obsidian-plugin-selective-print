@@ -32,6 +32,18 @@ list and an image.
    Presets.
 6. Try a weekly review and a meeting tracker note. Is the right starter selected?
 
+## Quick try-list (Gate D, 0.3.0)
+
+1. Open a note and run **Selective Print: Save current note as PDF** from the command palette.
+   In the dialog the button says **Save PDF**; click it.
+2. Either a notice says "Saved <folder>/<date> - <title>.pdf" and the file appears next to the
+   note, or a notice explains that one-click PDF is not available and the print dialog opens
+   instead. Tell me which one happened.
+3. If it saved: open the PDF. Does it look like the printout (sections, title, images)?
+4. Save the same note again. The second file gets " (2)", and nothing is overwritten.
+5. Optional: Settings → **Open PDF after saving** on, then save again. Does it open in Preview?
+   Do you want to keep this option?
+
 ## Full checklist (items 1-8, M2)
 
 | #   | Steps                                                                                                                                                                                                           | Expected                                                                                                                                                                                        |
@@ -45,5 +57,9 @@ list and an image.
 | 7   | If Dataview or Bases is installed: print a note with a query block.                                                                                                                                             | The results appear, or a notice says some content was still loading.                                                                                                                            |
 | 8   | Open the dialog and click **Cancel** (also try Esc). Then print and cancel in the macOS panel.                                                                                                                  | No files are created and nothing changes in the note. Printing again works straight away.                                                                                                       |
 
-Items 9-10 (PDF adapter) arrive with M4. Item 11 (reload without duplicate icons) and item 12
-(recording versions) apply to every release.
+| #                                                    | Steps                                                                                                                                                                                                                                          | Expected                                                                                                                                                                                    |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 9                                                    | Run **Save current note as PDF** (or pick **PDF** in the dialog's Output menu) on a note with a table, a callout and an embedded image. Repeat with **PDF folder** set to `Exports`, and with a file name template using `{frontmatter.type}`. | The file is written to the right folder with the right name (next to the note by default, `{date} - {title}.pdf`). A second save adds ` (2)`. The PDF opens in Preview; images are present. |
+| 10                                                   | If one-click PDF is unavailable on this Obsidian version, or fails:                                                                                                                                                                            | A notice explains why and the macOS print dialog opens instead ("use PDF → Save as PDF"). Nothing fails silently. (The fallback is also covered by automated tests with a fake bridge.)     |
+| Item 11 (reload without duplicate icons) and item 12 |
+| (recording versions) apply to every release.         |

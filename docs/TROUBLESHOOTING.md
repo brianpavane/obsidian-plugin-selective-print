@@ -6,6 +6,13 @@ Check that a Markdown note is open and active. Try the command palette:
 **Selective Print: Print / export current note…**. If an error notice appears, run
 **Selective Print: Show diagnostics** and send the copied report.
 
+## "One-click PDF is not available" or "PDF failed"
+
+The plugin opened the print dialog instead: use **PDF → Save as PDF** there. One-click PDF
+needs Electron's `remote` module, which some Obsidian versions do not provide. "Show
+diagnostics" reports whether it is available. If the message mentions the PDF folder, check
+Settings → PDF folder (it must be inside the vault).
+
 ## A section is missing from the printout
 
 - Was it unchecked in the dialog? Excluded sections are tagged "global".
