@@ -71,6 +71,26 @@ export class PresetStore {
    * mention the preset marker are reported as errors rather than silently ignored.
    */
   async reload(): Promise<void> {
+    try {
+      await this.load();
+    } catch (err) {
+      // Never reject: callers fire this from events. Report through the validation result.
+      this.log.error("loading presets failed", err);
+      this.result = {
+        presets: [],
+        errors: [
+          {
+            file: this.folderSetting(),
+            field: "(folder)",
+            message: `presets could not be loaded: ${err instanceof Error ? err.message : String(err)}`,
+          },
+        ],
+        warnings: [],
+      };
+    }
+  }
+
+  private async load(): Promise<void> {
     const generation = ++this.generation;
     const folder = this.folder();
     if (folder === null) {

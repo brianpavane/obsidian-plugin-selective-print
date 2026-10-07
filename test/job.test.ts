@@ -89,3 +89,30 @@ describe("buildJob: the Markdown passed to the renderer (M2 acceptance)", () => 
     expect(propertyDisplay(undefined)).toBe("");
   });
 });
+
+describe("performance (M5): whole core pipeline on a 12k-line note", () => {
+  it("parse, defaults, a dialog toggle and the job take well under a second", () => {
+    const transcript = Array.from(
+      { length: 12000 },
+      (_, i) => `Speaker ${i % 4}: line ${i} of a long call.`,
+    ).join("\n");
+    const sections = Array.from(
+      { length: 40 },
+      (_, i) => `## Section ${i}\n- point ${i}\n- [ ]\n`,
+    ).join("\n");
+    const src = `---\ntype: meeting\n---\n## Meeting Summary\nShort.\n\n${sections}\n## Transcript\n${transcript}\n`;
+    const start = performance.now();
+    const big = parseSections(src);
+    const included = finalSelection(
+      resolveDefaults({ tree: big, globalExclude: ["Transcript"] }).defaults,
+    );
+    const section = big.all.find((s) => s.title === "Section 7");
+    if (!section) throw new Error("fixture");
+    const toggled = toggleSection(section, included);
+    const job = buildJob({ ...input(), tree: big, included: toggled });
+    const ms = performance.now() - start;
+    expect(job.markdown).not.toContain("Speaker 1:");
+    expect(job.markdown).not.toContain("## Section 7");
+    expect(ms).toBeLessThan(1000);
+  });
+});

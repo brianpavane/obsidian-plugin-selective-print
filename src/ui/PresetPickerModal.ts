@@ -1,4 +1,5 @@
-import { App, FuzzySuggestModal, TFile } from "obsidian";
+import { App, FuzzySuggestModal, Notice, TFile } from "obsidian";
+import { PLUGIN_NAME } from "../constants";
 
 /** "Open print preset…": pick a preset file and open it for editing. */
 export class PresetPickerModal extends FuzzySuggestModal<TFile> {
@@ -19,6 +20,13 @@ export class PresetPickerModal extends FuzzySuggestModal<TFile> {
   }
 
   onChooseItem(file: TFile): void {
-    void this.app.workspace.getLeaf(false).openFile(file);
+    this.app.workspace
+      .getLeaf(false)
+      .openFile(file)
+      .catch((err: unknown) => {
+        new Notice(
+          `${PLUGIN_NAME}: could not open ${file.path}: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      });
   }
 }

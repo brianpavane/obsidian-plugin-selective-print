@@ -98,8 +98,12 @@ export class PrintFlow {
         new Notice(`${PLUGIN_NAME}: only Markdown notes can be printed.`);
         return;
       }
+      const started = performance.now();
       const note = await readNote(this.app, file);
       const tree = parseSections(note.source);
+      this.log.debug(
+        `parsed "${file.path}": ${tree.lines.length} lines, ${tree.all.length} sections in ${Math.round(performance.now() - started)} ms`,
+      );
       const overrides = readNoteOverrides(note.properties);
       const { list, initial, notices } = this.presetsFor(note);
       notices.push(...overrides.warnings.map((w) => w.message));
@@ -183,7 +187,12 @@ export class PrintFlow {
   ): Promise<void> {
     let rendered: Awaited<ReturnType<typeof renderJob>> | null = null;
     try {
+      const started = performance.now();
       rendered = await renderJob(this.app, job, note.file.path);
+      this.log.debug(
+        `rendered ${job.markdown.length} characters in ${Math.round(performance.now() - started)} ms` +
+          (rendered.timedOut ? " (settle timeout reached)" : ""),
+      );
       if (rendered.timedOut) {
         new Notice(
           `${PLUGIN_NAME}: some content was still loading (for example Dataview or diagrams) and may be missing.`,
