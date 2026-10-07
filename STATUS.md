@@ -1,6 +1,6 @@
 # STATUS
 
-- Version: 0.0.1 (internal, unreleased) Pass: 1 Milestone: M0 + M1 complete
+- Version: 0.0.1 (internal spike pre-release on GitHub, for BRAT testing) Pass: 1 Milestone: M0 + M1 complete
 - Gate: A State: **open: waiting on Brian**
 
 ## Done
@@ -25,7 +25,7 @@ Nothing. Stopped at Gate A.
 1. Run the spike checklist in `docs/SPIKE_RESULTS.md` (A1-A7, B1-B2, C1) and report the results.
 2. Anonymized samples: one generated meeting note with a Krisp transcript, one weekly review,
    one meeting tracker (fictional content, real headings).
-3. Approve the core semantics below, or say which to change:
+   Core semantics below: **approved by Brian on 2026-10-07** ("Approve All"; open to change later):
    1. Rules match heading text trimmed and case-insensitive, at any level, against the plain
       text (`## [[Transcript]]` and `## **Transcript**` match `Transcript`) or the raw text.
    2. `regex:` rules are case-insensitive.
@@ -53,6 +53,11 @@ Nothing. Stopped at Gate A.
        `{date}` uses the note's `date` property if valid, otherwise today.
 
 ## Decisions made
+
+- 2026-10-07, Brian: approved all 14 core semantics listed under "Waiting on Brian".
+- 2026-10-07, Brian: push to GitHub and publish `0.0.1` as a GitHub **pre-release** so the spikes
+  can be installed with BRAT. This deviates from the roadmap ("Pass 1: no release"); the build is
+  marked internal and not for daily use.
 
 - 2026-10-07, Brian (Gate 0): Obsidian 1.14.4 and macOS 26.7.
 - 2026-10-07, Brian (Gate 0): use the existing repo

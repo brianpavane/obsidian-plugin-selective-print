@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.0.1] - 2026-10-07
+
+Internal spike pre-release for Gate A testing via BRAT. Not for daily use.
+
 ### Added
 
 - M0: repository scaffold (strict TypeScript, esbuild, ESLint with the Obsidian ruleset,

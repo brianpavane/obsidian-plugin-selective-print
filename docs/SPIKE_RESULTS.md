@@ -18,22 +18,20 @@ results. Fill in the "Result" column and send it back, or paste your answers int
 | **Selective Print: Spike print test: sample note without iframe sandbox** | The same, without the `sandbox` attribute. Isolates sandbox effects if the first one fails.                                                                                                                                                                 |
 | **Selective Print: Show diagnostics**                                     | Shows Obsidian/Electron/Chrome versions and whether `remote`, `BrowserWindow` and `printToPDF` exist. Runs `printToPDF` **in memory** on the current window and checks the `%PDF-` header. Nothing is written to disk. The report contains no note content. |
 
-## Setup (once)
+## Setup (once, via BRAT)
 
-1. In this repo: `npm ci && npm run build`. This produces `main.js`.
-2. Link the plugin into your dev/test vault (replace `<vault>` with the vault folder):
-   ```sh
-   mkdir -p "<vault>/.obsidian/plugins"
-   ln -s ~/projects/obsidian-plugin-selective-print "<vault>/.obsidian/plugins/selective-print"
-   ```
-   If you prefer not to symlink, copy `main.js`, `manifest.json` and `styles.css` into
-   `<vault>/.obsidian/plugins/selective-print/`.
-3. In Obsidian: **Settings → Community plugins**. Turn off Restricted mode if needed, click
-   the reload icon, and enable **Selective Print**.
+1. Install and enable the **BRAT** community plugin if you do not have it.
+2. Cmd-P → **BRAT: Add a beta plugin for testing**. Enter
+   `https://github.com/brianpavane/obsidian-plugin-selective-print` and choose version
+   `0.0.1` (a pre-release: an internal spike build, not for daily use).
+3. **Settings → Community plugins**: enable **Selective Print**.
 4. Open Developer Tools with **Option-Cmd-I** and select the **Console** tab. Keep it open.
 5. Optional, for verbose `[SelectivePrint]` logs: quit Obsidian, create
    `<vault>/.obsidian/plugins/selective-print/data.json` containing `{"debugLogging": true}`,
    and reopen. (A settings tab arrives in M2.)
+
+Developer alternative: `npm ci && npm run build`, then symlink the repo to
+`<vault>/.obsidian/plugins/selective-print`.
 
 ## Brian to test
 
