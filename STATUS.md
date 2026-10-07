@@ -19,9 +19,8 @@ Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-1. Update to 0.6.0 and try a folder pack and a selection pack (4 quick items in
-   `docs/MANUAL_QA.md`).
-2. Still open from 0.5.0: does the header and footer show on printouts and PDFs?
+Nothing. 0.6.0 reported working on 2026-10-07 ("This is working as it should be"). Header and
+footer were not confirmed separately; they stay marked unverified.
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -34,6 +33,9 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian: 0.6.0 accepted ("This is working as it should be"). Keep "Each note on a
+  new page" as an option, on by default.
 
 - 2026-10-07, Brian (Gate F, packs): "go, with all of it!" Built the full scope (folder,
   selection, date range, ordering, per-note defaults or one preset, cover, contents, new page per
