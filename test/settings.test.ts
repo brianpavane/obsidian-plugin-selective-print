@@ -32,6 +32,12 @@ describe("migrateSettings", () => {
     expect(s).toEqual(defaultSettings());
   });
 
+  it("keeps numeric installed-starter versions and drops the rest", () => {
+    const s = migrateSettings({ installedStarters: { "Meeting notes": 1, Bad: "x", Gone: 0 } });
+    expect(s.installedStarters).toEqual({ "Meeting notes": 1, Gone: 0 });
+    expect(migrateSettings({ installedStarters: [1] }).installedStarters).toEqual({});
+  });
+
   it("does not share the default array between calls", () => {
     const a = defaultSettings();
     a.globalExclude.push("Notes");

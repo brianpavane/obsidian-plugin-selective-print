@@ -24,7 +24,8 @@ const context = await esbuild.context({
     ...builtinModules,
   ],
   // print.css is bundled as a string so the Print/PDF/HTML adapters share one stylesheet.
-  loader: { ".css": "text" },
+  // Starter presets (starters/*.md) are bundled as strings too.
+  loader: { ".css": "text", ".md": "text" },
   format: "cjs",
   target: "es2022",
   logLevel: "info",

@@ -29,6 +29,8 @@ export interface SelectivePrintSettings {
   showRibbonIcon: boolean;
   skipEmpty: boolean;
   debugLogging: boolean;
+  /** Starter preset name -> starter-version last installed (0: seen but not installed). */
+  installedStarters: Record<string, number>;
 }
 
 export function defaultSettings(): SelectivePrintSettings {
@@ -49,6 +51,7 @@ export function defaultSettings(): SelectivePrintSettings {
     showRibbonIcon: false,
     skipEmpty: true,
     debugLogging: false,
+    installedStarters: {},
   };
 }
 
@@ -80,7 +83,15 @@ export function migrateSettings(raw: unknown): SelectivePrintSettings {
     const value = raw[key];
     const fallback = defaults[key];
     if (value === undefined) continue;
-    if (Array.isArray(fallback)) {
+    if (key === "installedStarters") {
+      if (isRecord(value)) {
+        result.installedStarters = Object.fromEntries(
+          Object.entries(value).filter(
+            (e): e is [string, number] => typeof e[1] === "number" && Number.isFinite(e[1]),
+          ),
+        );
+      }
+    } else if (Array.isArray(fallback)) {
       if (Array.isArray(value) && value.every((v) => typeof v === "string")) {
         target[key] = [...value];
       }
