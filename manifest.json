@@ -1,7 +1,7 @@
 {
   "id": "selective-print",
   "name": "Selective Print",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "minAppVersion": "1.5.7",
   "description": "Print and export notes to PDF, choosing which sections to include each time.",
   "author": "Brian Pavane",

@@ -1,6 +1,6 @@
 {
   "name": "selective-print",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Print and export Obsidian notes to PDF with section-level control (macOS desktop).",
   "main": "main.js",
   "private": true,
