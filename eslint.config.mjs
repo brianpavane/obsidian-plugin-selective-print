@@ -27,6 +27,8 @@ export default defineConfig([
     rules: {
       "import/no-nodejs-modules": "off",
       "obsidianmd/hardcoded-config-path": "off",
+      // Test fakes assign and inspect methods directly.
+      "@typescript-eslint/unbound-method": "off",
     },
   },
   {

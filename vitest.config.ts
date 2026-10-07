@@ -17,7 +17,7 @@ export default defineConfig({
     environment: "node",
     coverage: {
       provider: "v8",
-      include: ["src/core/**/*.ts"],
+      include: ["src/core/**/*.ts", "src/output/adapter.ts", "src/output/pdf.ts"],
       exclude: ["src/core/types.ts"],
       thresholds: { lines: 90 },
       reporter: ["text", "text-summary"],
