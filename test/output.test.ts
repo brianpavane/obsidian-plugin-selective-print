@@ -18,7 +18,7 @@ const opts: OutputOptions = {
   paper: "letter",
   orientation: "portrait",
   marginsIn: 0.75,
-  target: { folder: "Exports", name: "2026-10-07 - Weekly Sync", openAfter: false },
+  target: { kind: "vault", folder: "Exports", name: "2026-10-07 - Weekly Sync", openAfter: false },
 };
 const PDF = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31]); // "%PDF-1"
 
@@ -107,8 +107,11 @@ function fakes(
     existing?: string[];
     abs?: string | null;
     open?: PdfBridge["open"];
+    ask?: PdfBridge["askSavePath"];
+    desktopFiles?: string[];
   } = {},
 ) {
+  const local: [string, Uint8Array][] = [];
   const written: [string, Uint8Array][] = [];
   const cleaned: string[] = [];
   const folders: string[] = [];
@@ -116,6 +119,13 @@ function fakes(
     capability: () => ({ ok: true }),
     render: over.render ?? (() => Promise.resolve(PDF)),
     open: over.open ?? vi.fn(() => Promise.resolve()),
+    desktopDir: () => "/Users/alex/Desktop",
+    askSavePath: over.ask ?? (() => Promise.resolve("/Users/alex/Documents/Chosen.pdf")),
+    localExists: (p) => (over.desktopFiles ?? []).includes(p),
+    writeLocal: (p, d) => {
+      local.push([p, d]);
+      return Promise.resolve();
+    },
   };
   const existing = new Set((over.existing ?? []).map((p) => p.toLowerCase()));
   const io: PdfIo = {
@@ -141,8 +151,63 @@ function fakes(
     },
     absolutePath: (p) => (over.abs === undefined ? `/vault/${p}` : over.abs),
   };
-  return { bridge, io, written, cleaned, folders };
+  return { bridge, io, written, cleaned, folders, local };
 }
+
+const vaultTarget = {
+  kind: "vault" as const,
+  folder: "Exports",
+  name: "2026-10-07 - Weekly Sync",
+  openAfter: false,
+};
+
+describe("PdfAdapter: Desktop and Save panel", () => {
+  it("Desktop: saves there and never overwrites", async () => {
+    const f = fakes({ desktopFiles: ["/Users/alex/Desktop/N.pdf"] });
+    const r = await new PdfAdapter(f.bridge, f.io, "").run(doc, {
+      ...opts,
+      target: { kind: "desktop", name: "N", openAfter: false },
+    });
+    expect(r).toMatchObject({ ok: true, path: "/Users/alex/Desktop/N (2).pdf" });
+    expect(f.local[0]?.[0]).toBe("/Users/alex/Desktop/N (2).pdf");
+    expect(f.written).toEqual([]);
+  });
+
+  it("Ask: the Save panel starts on the Desktop with the file name; the chosen path is used", async () => {
+    const ask = vi.fn<PdfBridge["askSavePath"]>(() =>
+      Promise.resolve("/Users/alex/Documents/Chosen"),
+    );
+    const f = fakes({ ask });
+    const r = await new PdfAdapter(f.bridge, f.io, "").run(doc, {
+      ...opts,
+      target: { kind: "ask", name: "N", openAfter: true },
+    });
+    expect(ask).toHaveBeenCalledWith("/Users/alex/Desktop/N.pdf");
+    expect(r).toMatchObject({ ok: true, path: "/Users/alex/Documents/Chosen.pdf" });
+    expect(f.bridge.open).toHaveBeenCalledWith("/Users/alex/Documents/Chosen.pdf");
+  });
+
+  it("Ask: cancelling renders and writes nothing, and does not fall back to print", async () => {
+    const render = vi.fn<PdfBridge["render"]>(() => Promise.resolve(PDF));
+    const f = fakes({ ask: () => Promise.resolve(null), render });
+    const pdf = new PdfAdapter(f.bridge, f.io, "");
+    const askOpts = { ...opts, target: { kind: "ask" as const, name: "N", openAfter: false } };
+    expect(await pdf.run(doc, askOpts)).toEqual({
+      ok: false,
+      cancelled: true,
+      message: "Save cancelled.",
+    });
+    expect(render).not.toHaveBeenCalled();
+    expect(f.local).toEqual([]);
+
+    const print = fakeAdapter("print", "ok");
+    const notify = vi.fn();
+    const viaFallback = await runWithFallback(pdf, print, doc, askOpts, notify);
+    expect(viaFallback.cancelled).toBe(true);
+    expect(print.run).not.toHaveBeenCalled();
+    expect(notify).not.toHaveBeenCalled();
+  });
+});
 
 describe("PdfAdapter", () => {
   it("writes a verified PDF to the target folder and cleans up the temp file", async () => {
@@ -179,7 +244,7 @@ describe("PdfAdapter", () => {
       ...opts,
       paper: "a4",
       orientation: "landscape",
-      target: { folder: "", name: "N", openAfter: false },
+      target: { kind: "vault", folder: "", name: "N", openAfter: false },
     });
     expect(r.path).toBe("N.pdf");
     expect(render.mock.calls[0]?.[1]).toMatchObject({
@@ -216,14 +281,14 @@ describe("PdfAdapter", () => {
     const f = fakes({ open });
     await new PdfAdapter(f.bridge, f.io, "").run(doc, {
       ...opts,
-      target: { ...opts.target!, openAfter: true },
+      target: { ...vaultTarget, openAfter: true },
     });
     expect(open).toHaveBeenCalledWith("/vault/Exports/2026-10-07 - Weekly Sync.pdf");
 
     const g = fakes({ open: () => Promise.reject(new Error("no app")) });
     const r = await new PdfAdapter(g.bridge, g.io, "").run(doc, {
       ...opts,
-      target: { ...opts.target!, openAfter: true },
+      target: { ...vaultTarget, openAfter: true },
     });
     expect(r.ok).toBe(true);
     expect(r.message).toMatch(/could not open it: no app/);
@@ -231,7 +296,7 @@ describe("PdfAdapter", () => {
     const h = fakes({ abs: null });
     const r2 = await new PdfAdapter(h.bridge, h.io, "").run(doc, {
       ...opts,
-      target: { ...opts.target!, openAfter: true },
+      target: { ...vaultTarget, openAfter: true },
     });
     expect(r2.message).toMatch(/not on the local disk/);
   });

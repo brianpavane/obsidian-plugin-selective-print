@@ -21,10 +21,23 @@ type BrowserWindowCtor = new (options: Record<string, unknown>) => WindowLike;
 interface ShellLike {
   openPath?: (path: string) => Promise<string>;
 }
+interface DialogLike {
+  showSaveDialog?: (
+    parent: unknown,
+    options: Record<string, unknown>,
+  ) => Promise<{ canceled: boolean; filePath?: string }>;
+}
 interface RemoteLike {
   BrowserWindow?: unknown;
   getCurrentWebContents?: () => WebContentsLike;
+  getCurrentWindow?: () => unknown;
   shell?: ShellLike;
+  dialog?: DialogLike;
+  app?: { getPath?: (name: string) => string };
+}
+interface FsLike {
+  existsSync(path: string): boolean;
+  promises: { writeFile(path: string, data: Uint8Array): Promise<void> };
 }
 interface ElectronLike {
   remote?: RemoteLike;
@@ -248,4 +261,55 @@ export async function openPathExternally(absPath: string): Promise<void> {
     throw new Error("cannot open files from Obsidian on this system");
   const error = await shell.openPath(absPath);
   if (error) throw new Error(error);
+}
+
+function remoteOrThrow(): RemoteLike {
+  const req = getRequire();
+  const remote = req ? getRemote(req).remote : null;
+  if (!remote) throw new Error('Electron "remote" is not available');
+  return remote;
+}
+
+/** The user's Desktop folder. */
+export function desktopDir(): string {
+  const remote = remoteOrThrow();
+  const fromApp = remote.app?.getPath?.("desktop");
+  if (fromApp) return fromApp;
+  const req = getRequire();
+  const os = req ? (tryRequire(req, "os") as { homedir?: () => string } | null) : null;
+  const home = os?.homedir?.();
+  if (!home) throw new Error("cannot find the Desktop folder");
+  return `${home}/Desktop`;
+}
+
+/**
+ * Show the macOS Save panel. Returns the chosen absolute path, or null when cancelled.
+ * The panel itself asks before replacing an existing file.
+ */
+export async function askSavePath(defaultPath: string): Promise<string | null> {
+  const remote = remoteOrThrow();
+  if (typeof remote.dialog?.showSaveDialog !== "function")
+    throw new Error("the Save panel is not available");
+  const result = await remote.dialog.showSaveDialog(remote.getCurrentWindow?.(), {
+    title: "Save PDF",
+    defaultPath,
+    filters: [{ name: "PDF", extensions: ["pdf"] }],
+    properties: ["createDirectory", "showOverwriteConfirmation"],
+  });
+  return result.canceled || !result.filePath ? null : result.filePath;
+}
+
+function fs(): FsLike {
+  const req = getRequire();
+  const mod = req ? (tryRequire(req, "fs") as FsLike | null) : null;
+  if (!mod) throw new Error("file access is not available");
+  return mod;
+}
+
+export function localFileExists(absPath: string): boolean {
+  return fs().existsSync(absPath);
+}
+
+export async function writeLocalFile(absPath: string, data: Uint8Array): Promise<void> {
+  await fs().promises.writeFile(absPath, data);
 }

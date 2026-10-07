@@ -15,15 +15,27 @@ export interface OutputOptions {
   paper: PaperSize;
   orientation: Orientation;
   marginsIn: number;
-  /** Where file-producing adapters save: vault folder ("" = vault root) and name without extension. */
-  target?: { folder: string; name: string; openAfter: boolean };
+  /** Where file-producing adapters save. `name` has no extension. */
+  target?: OutputTarget;
 }
+
+/**
+ * "vault": a vault folder ("" = vault root), never overwriting.
+ * "desktop": the Desktop, never overwriting.
+ * "ask": the macOS Save panel, starting on the Desktop.
+ */
+export type OutputTarget =
+  | { kind: "vault"; folder: string; name: string; openAfter: boolean }
+  | { kind: "desktop"; name: string; openAfter: boolean }
+  | { kind: "ask"; name: string; openAfter: boolean };
 
 export interface OutputResult {
   ok: boolean;
   message?: string;
-  /** Vault path of the written file, for file-producing adapters. */
+  /** Path of the written file (vault path or absolute path), for file-producing adapters. */
   path?: string;
+  /** The user cancelled (for example in the Save panel). Not a failure: no fallback. */
+  cancelled?: boolean;
 }
 
 export interface OutputAdapter {
@@ -80,7 +92,7 @@ export async function runWithFallback(
   let reason: string;
   try {
     const result = await primary.run(doc, opts);
-    if (result.ok) return result;
+    if (result.ok || result.cancelled) return result;
     reason = result.message ?? "unknown error";
   } catch (err) {
     reason = err instanceof Error ? err.message : String(err);

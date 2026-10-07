@@ -11,6 +11,7 @@ describe("migrateSettings", () => {
     const s = migrateSettings(null);
     expect(s.globalExclude).toEqual(["Transcript"]);
     expect(s.alwaysReview).toBe(true);
+    expect(s.pdfDestination).toBe("ask");
     expect(s.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION);
   });
 
@@ -25,6 +26,7 @@ describe("migrateSettings", () => {
     const s = migrateSettings({
       globalExclude: ["ok", 3],
       paper: "tabloid",
+      pdfDestination: "cloud",
       alwaysReview: "yes",
       marginsIn: Number.NaN,
       surprise: true,

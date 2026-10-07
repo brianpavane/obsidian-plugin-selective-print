@@ -7,7 +7,15 @@ import { HeaderActions } from "./obsidian/triggers";
 import { describeStarterSync, noticeError, PresetStore } from "./obsidian/vault-presets";
 import type { OutputAdapter } from "./output/adapter";
 import printCss from "../print.css";
-import { openPathExternally, pdfCapability, renderHtmlFileToPdf } from "./output/electron-bridge";
+import {
+  askSavePath,
+  desktopDir,
+  localFileExists,
+  openPathExternally,
+  pdfCapability,
+  renderHtmlFileToPdf,
+  writeLocalFile,
+} from "./output/electron-bridge";
 import { PdfAdapter } from "./output/pdf";
 import { PrintAdapter } from "./output/print";
 import { VaultPdfIo } from "./obsidian/pdf-io";
@@ -42,7 +50,15 @@ export default class SelectivePrintPlugin extends Plugin {
       this.manifest.dir ?? `${this.app.vault.configDir}/plugins/${this.manifest.id}`,
     );
     const pdfAdapter = new PdfAdapter(
-      { capability: pdfCapability, render: renderHtmlFileToPdf, open: openPathExternally },
+      {
+        capability: pdfCapability,
+        render: renderHtmlFileToPdf,
+        open: openPathExternally,
+        desktopDir,
+        askSavePath,
+        localExists: localFileExists,
+        writeLocal: writeLocalFile,
+      },
       pdfIo,
       printCss,
     );

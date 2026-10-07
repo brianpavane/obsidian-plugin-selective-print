@@ -9,8 +9,9 @@ import {
 
 /**
  * One-click PDF adapter (SPEC 3.6). Renders the document in a hidden Electron window
- * (through the bridge), checks the `%PDF-` header and writes the file into the vault without
- * overwriting anything. Everything environment-specific is injected, so the adapter is tested
+ * (through the bridge), checks the `%PDF-` header and writes the file to the vault, the Desktop
+ * or a place chosen in the macOS Save panel. It never overwrites without confirmation: vault and
+ * Desktop saves append " (2)", and the Save panel asks before replacing. Everything environment-specific is injected, so the adapter is tested
  * with fakes. When it fails, the caller falls back to the Print adapter (runWithFallback).
  */
 
@@ -21,6 +22,11 @@ export interface PdfBridge {
     opts: { pageSize: "Letter" | "A4"; landscape: boolean; marginsIn: number; timeoutMs: number },
   ): Promise<Uint8Array>;
   open(absPath: string): Promise<void>;
+  desktopDir(): string;
+  /** macOS Save panel; null when cancelled. */
+  askSavePath(defaultPath: string): Promise<string | null>;
+  localExists(absPath: string): boolean;
+  writeLocal(absPath: string, data: Uint8Array): Promise<void>;
 }
 
 export interface PdfIo {
@@ -59,8 +65,22 @@ export class PdfAdapter implements OutputAdapter {
   }
 
   async run(doc: RenderedDocument, opts: OutputOptions): Promise<OutputResult> {
-    if (!opts.target) throw new Error("no file name was given for the PDF");
-    const { folder, name, openAfter } = opts.target;
+    const target = opts.target;
+    if (!target) throw new Error("no file name was given for the PDF");
+
+    // Decide where to save first, so cancelling the Save panel costs nothing.
+    let local: string | null = null;
+    if (target.kind === "desktop") {
+      local = uniqueFilename(`${this.bridge.desktopDir()}/${target.name}`, "pdf", (p) =>
+        this.bridge.localExists(p),
+      );
+    } else if (target.kind === "ask") {
+      const chosen = await this.bridge.askSavePath(
+        `${this.bridge.desktopDir()}/${target.name}.pdf`,
+      );
+      if (chosen === null) return { ok: false, cancelled: true, message: "Save cancelled." };
+      local = /\.pdf$/i.test(chosen) ? chosen : `${chosen}.pdf`;
+    }
 
     const html = await this.io.serialize(doc, `${this.css}\n${pageCss(opts)}`);
     const temp = await this.io.writeTemp(html);
@@ -77,14 +97,24 @@ export class PdfAdapter implements OutputAdapter {
     }
     if (!isPdf(data)) throw new Error("the generated file is not a valid PDF");
 
-    await this.io.ensureFolder(folder);
-    const base = folder ? `${folder}/${name}` : name;
-    const path = uniqueFilename(base, "pdf", (p) => this.io.exists(p));
-    await this.io.writePdf(path, data);
+    let path: string;
+    let abs: string | null;
+    if (local !== null) {
+      await this.bridge.writeLocal(local, data);
+      path = local;
+      abs = local;
+    } else if (target.kind === "vault") {
+      await this.io.ensureFolder(target.folder);
+      const base = target.folder ? `${target.folder}/${target.name}` : target.name;
+      path = uniqueFilename(base, "pdf", (p) => this.io.exists(p));
+      await this.io.writePdf(path, data);
+      abs = this.io.absolutePath(path);
+    } else {
+      throw new Error("no destination for the PDF");
+    }
 
     let message = `Saved ${path}`;
-    if (openAfter) {
-      const abs = this.io.absolutePath(path);
+    if (target.openAfter) {
       try {
         if (!abs) throw new Error("the vault is not on the local disk");
         await this.bridge.open(abs);

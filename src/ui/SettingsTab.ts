@@ -3,7 +3,7 @@ import { DEFAULT_GLOBAL_EXCLUDE } from "../constants";
 import { validateRuleEntry } from "../core/selection";
 import { vaultFolderPath } from "../obsidian/vault-presets";
 import { renderFilename } from "../core/filename";
-import type { OutputFormat, Orientation, PaperSize, PrintStyle } from "../settings";
+import type { OutputFormat, Orientation, PaperSize, PdfDestination, PrintStyle } from "../settings";
 import type SelectivePrintPlugin from "../main";
 
 /** Settings tab. Shows only settings whose feature has shipped (M2). */
@@ -112,8 +112,25 @@ export class SettingsTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           }),
       );
+    new Setting(containerEl)
+      .setName("Save PDF files to")
+      .setDesc(
+        "Where one-click PDF files go. A preset with its own PDF folder always saves into the vault.",
+      )
+      .addDropdown((dd) =>
+        dd
+          .addOption("ask", "Ask where to save (starts on your desktop)")
+          .addOption("desktop", "Desktop")
+          .addOption("vault", "The vault")
+          .setValue(s.pdfDestination)
+          .onChange(async (v) => {
+            s.pdfDestination = v as PdfDestination;
+            await this.plugin.saveSettings();
+            this.display();
+          }),
+      );
     const pdfFolder = new Setting(containerEl)
-      .setName("PDF folder")
+      .setName("PDF folder in the vault")
       .setDesc("Vault folder where PDF files are saved. Leave empty to save next to the note.")
       .addText((t) =>
         t
@@ -132,6 +149,7 @@ export class SettingsTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           }),
       );
+    if (s.pdfDestination !== "vault") pdfFolder.settingEl.hide();
     const example = (template: string): string =>
       renderFilename(template, {
         title: "Weekly Sync",

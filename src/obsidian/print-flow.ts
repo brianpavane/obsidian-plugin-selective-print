@@ -217,6 +217,7 @@ export class PrintFlow {
         options,
         (message) => new Notice(`${PLUGIN_NAME}: ${message}`, 10000),
       );
+      if (result.cancelled) return;
       if (!result.ok) new Notice(`${PLUGIN_NAME}: ${result.message ?? `${adapter.label} failed.`}`);
       else if (result.path)
         new Notice(`${PLUGIN_NAME}: ${result.message ?? `saved ${result.path}`}`);
@@ -227,10 +228,26 @@ export class PrintFlow {
     }
   }
 
-  /** PDF folder and file name from the preset or settings (SPEC 3.6). */
+  /**
+   * Where the PDF goes and what it is called. A preset's `pdf-folder` means a vault folder;
+   * otherwise the "Save PDFs to" setting decides (Save panel, Desktop, or vault).
+   */
   private pdfTarget(note: NoteSnapshot, preset: Preset): NonNullable<OutputOptions["target"]> {
     const s = this.settings();
-    const folderSetting = preset.output.pdfFolder ?? s.pdfFolder;
+    const { name, warnings } = renderFilename(preset.output.filename ?? s.filenameTemplate, {
+      title: note.title,
+      preset: preset.name,
+      properties: note.properties,
+      now: new Date(),
+    });
+    for (const w of warnings) new Notice(`${PLUGIN_NAME}: file name: ${w.message}`);
+    const openAfter = s.openPdfInPreview;
+
+    const presetFolder = preset.output.pdfFolder;
+    if (presetFolder === undefined && s.pdfDestination !== "vault") {
+      return { kind: s.pdfDestination, name, openAfter };
+    }
+    const folderSetting = presetFolder ?? s.pdfFolder;
     let folder: string;
     if (folderSetting.trim() === "") {
       const parent = note.file.parent?.path ?? "";
@@ -241,14 +258,7 @@ export class PrintFlow {
         throw new Error(`the PDF folder "${folderSetting}" points outside the vault`);
       folder = resolved;
     }
-    const { name, warnings } = renderFilename(preset.output.filename ?? s.filenameTemplate, {
-      title: note.title,
-      preset: preset.name,
-      properties: note.properties,
-      now: new Date(),
-    });
-    for (const w of warnings) new Notice(`${PLUGIN_NAME}: file name: ${w.message}`);
-    return { folder, name, openAfter: s.openPdfInPreview };
+    return { kind: "vault", folder, name, openAfter };
   }
 
   private fail(what: string, err: unknown): void {

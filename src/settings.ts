@@ -11,6 +11,8 @@ export type OutputFormat = "print" | "pdf" | "html" | "markdown";
 export type PaperSize = "letter" | "a4";
 export type Orientation = "portrait" | "landscape";
 export type PrintStyle = "neutral" | "match-theme";
+/** Where one-click PDFs go: the macOS Save panel (starting on the Desktop), the Desktop, or the vault. */
+export type PdfDestination = "ask" | "desktop" | "vault";
 
 export interface SelectivePrintSettings {
   schemaVersion: number;
@@ -22,6 +24,8 @@ export interface SelectivePrintSettings {
   orientation: Orientation;
   marginsIn: number;
   printStyle: PrintStyle;
+  pdfDestination: PdfDestination;
+  /** Vault folder used when pdfDestination is "vault" ("" = next to the note). */
   pdfFolder: string;
   filenameTemplate: string;
   openPdfInPreview: boolean;
@@ -44,6 +48,7 @@ export function defaultSettings(): SelectivePrintSettings {
     orientation: "portrait",
     marginsIn: 0.75,
     printStyle: "neutral",
+    pdfDestination: "ask",
     pdfFolder: "",
     filenameTemplate: "{date} - {title}",
     openPdfInPreview: false,
@@ -60,6 +65,7 @@ const ENUM_VALUES: Partial<Record<keyof SelectivePrintSettings, readonly string[
   paper: ["letter", "a4"],
   orientation: ["portrait", "landscape"],
   printStyle: ["neutral", "match-theme"],
+  pdfDestination: ["ask", "desktop", "vault"],
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
