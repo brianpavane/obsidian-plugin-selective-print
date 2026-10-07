@@ -19,6 +19,12 @@ post-1.0 work needs a Gate F scope approval (`CLAUDE.md` section 4).
 
 ## New ideas
 
+- Packs: page numbers in the contents. Chromium cannot compute them (no `target-counter()`);
+  it would need a second pass over the generated PDF.
+- Packs: a running header with each note's own name (Chromium lacks `string-set` and running
+  elements); today each note's details print under its title.
+- Packs: remember the last pack options.
+
 - Adopt the declarative settings API (Obsidian 1.13+) so settings appear in settings search.
   Needs `minAppVersion` 1.13 or a fallback.
 - "Forget remembered choices" button in the dialog (today: delete the `print-exclude` property).

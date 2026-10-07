@@ -6,6 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-07
+
+### Added
+
+- **Multi-note packs:** print or save several notes as one document.
+  - Start from: right-click a folder → **Print folder…**; select notes (Cmd-click) →
+    **Print selected notes…**; or the commands **Print a folder…** and **Print notes by tag or
+    property…** (`#tag` or `property: value`).
+  - Pack dialog: include subfolders; order by date, name or last modified, with ↑/↓ to adjust;
+    an optional date range (date property or a date in the file name); per-note checkboxes;
+    sections from each note's own defaults or one preset for all; cover page, contents and
+    "each note on a new page" (all on by default); Print or PDF.
+  - Each note gets its title plus its location and last-modified time. Links between notes in
+    the pack jump within the document (clickable in the PDF).
+  - Header: pack title | number of notes. Footer: Printed | Page X of Y.
+  - Progress notice while rendering; asks before packs over 50 notes; a note that fails is
+    reported and the rest still print.
+
+### Changed
+
+- Quick print and packs share one function for a note's default sections, so they always
+  agree with the dialog.
+
 ## [0.5.0] - 2026-10-07
 
 ### Added

@@ -52,6 +52,35 @@ A note can force a preset with the `print-preset` property, or list its own excl
 Commands: **Validate print presets**, **Open print preset…**, **Install / refresh starter
 presets**.
 
+## Printing several notes as one (packs)
+
+Start a pack in any of these ways:
+
+- right-click a folder → **Print folder…**;
+- select several notes in the file explorer (Cmd-click) → right-click → **Print selected
+  notes…**;
+- **Print a folder…** (command) and pick a folder;
+- **Print notes by tag or property…** (command) and type `#meeting` or `type: meeting`.
+
+The pack dialog lets you:
+
+- **Include subfolders** (folders only).
+- Set the **Order**: by date (the `date` property, or a date in the file name), by name, or by
+  last modified. Use ↑ and ↓ to fine-tune.
+- Set a **Date range**, for example one week of meetings. Notes without a date are left out
+  while a range is set; the summary says how many.
+- Uncheck notes to leave them out.
+- Choose **Sections**: each note's own defaults (its preset, its `print-exclude`, the global
+  list, so Transcript stays out), or one preset for every note.
+- Turn on or off the **Cover page** (title, date range, number of notes, printed time),
+  **Contents** (clickable in the PDF; no page numbers) and **Each note on a new page**.
+- Choose **Print** or **PDF**. A PDF is named `{date} - <pack title>.pdf` and goes where
+  **Save PDF files to** says.
+
+Each note starts with its title and a line with its location and last-modified time. Links
+between notes in the pack jump within the document. Large packs show progress; packs over 50
+notes ask first.
+
 ## Saving a PDF
 
 Run **Save current note as PDF**, or choose **PDF** in the dialog's **Output** menu. You can
@@ -125,7 +154,7 @@ printout. The markers are Obsidian comments, so they are invisible in reading vi
 ## Commands
 
 Print / export current note… · Quick print current note (preset defaults) · Save current note
-as PDF · Validate print presets · Open print preset… · Install / refresh starter presets ·
+as PDF · Print a folder… · Print notes by tag or property… · Validate print presets · Open print preset… · Install / refresh starter presets ·
 Show diagnostics. Assign hotkeys in Settings → Hotkeys.
 
 ## Limitations

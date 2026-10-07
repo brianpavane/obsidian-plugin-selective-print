@@ -1,6 +1,6 @@
 # STATUS
 
-- Version: 0.5.0 Pass: 5 Milestone: M5 complete
+- Version: 0.6.0 Pass: 5 Milestone: M5 complete
 - Gate: E State: closed (2026-10-07): staying on 0.4.0, no 1.0.0 release
 
 ## Done
@@ -19,9 +19,9 @@ Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-1. Update to 0.5.0 and check the header and footer on a printout and on a PDF (3 quick items
-   in `docs/MANUAL_QA.md`). If the print panel shows no header or footer, Chromium's
-   page-margin feature is missing and I will propose another route.
+1. Update to 0.6.0 and try a folder pack and a selection pack (4 quick items in
+   `docs/MANUAL_QA.md`).
+2. Still open from 0.5.0: does the header and footer show on printouts and PDFs?
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -34,6 +34,12 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian (Gate F, packs): "go, with all of it!" Built the full scope (folder,
+  selection, date range, ordering, per-note defaults or one preset, cover, contents, new page per
+  note, Print or PDF, progress, more-than-50 confirmation, failure reporting) plus tag/property
+  queries and in-pack link rewriting. Not possible: page numbers in the contents (Chromium cannot
+  compute them).
 
 - 2026-10-07, Brian (Gate F, header and footer): approved the scope, adding "Last modified"
   and then swapping positions. Final layout: header = folder and note name | Last modified;

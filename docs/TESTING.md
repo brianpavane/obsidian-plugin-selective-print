@@ -14,20 +14,22 @@ CI runs lint, typecheck, coverage and build on every push and pull request.
 
 ## Test files
 
-| File                   | Covers                                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------- |
-| `sections.test.ts`     | Parser, round-trip property test (fast-check), emptiness, performance                             |
-| `selection.test.ts`    | Rules, precedence, global list cases, drift                                                       |
-| `filter.test.ts`       | Selection slicing, markers, callouts, skip-empty, properties, pipeline                            |
-| `presets.test.ts`      | Schema validation, set validation, matching, specificity, dropdown order, serialization           |
-| `filename.test.ts`     | Templates, sanitizing, unique names                                                               |
-| `dialog-state.test.ts` | Tri-state checklist, quick actions, size hints                                                    |
-| `job.test.ts`          | Snapshot of the Markdown passed to the renderer; whole-pipeline performance (12k lines)           |
-| `note-keys.test.ts`    | `print-exclude` / `print-preset`; Remember list and lossiness                                     |
-| `starters.test.ts`     | Bundled starters validate and match; install and upgrade plan                                     |
-| `output.test.ts`       | Adapter registry, fallback, PDF adapter (vault, Desktop, Save panel, cancel, failures) with fakes |
-| `diagnostics.test.ts`  | Diagnostics report content (no note content)                                                      |
-| `settings.test.ts`     | Settings defaults and migration                                                                   |
+| File                    | Covers                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| `sections.test.ts`      | Parser, round-trip property test (fast-check), emptiness, performance                             |
+| `selection.test.ts`     | Rules, precedence, global list cases, drift                                                       |
+| `filter.test.ts`        | Selection slicing, markers, callouts, skip-empty, properties, pipeline                            |
+| `presets.test.ts`       | Schema validation, set validation, matching, specificity, dropdown order, serialization           |
+| `filename.test.ts`      | Templates, sanitizing, unique names                                                               |
+| `dialog-state.test.ts`  | Tri-state checklist, quick actions, size hints                                                    |
+| `job.test.ts`           | Snapshot of the Markdown passed to the renderer; whole-pipeline performance (12k lines)           |
+| `note-keys.test.ts`     | `print-exclude` / `print-preset`; Remember list and lossiness                                     |
+| `starters.test.ts`      | Bundled starters validate and match; install and upgrade plan                                     |
+| `output.test.ts`        | Adapter registry, fallback, PDF adapter (vault, Desktop, Save panel, cancel, failures) with fakes |
+| `pack.test.ts`          | Pack dates, sorting, date filter, queries, reordering, labels; shared note defaults               |
+| `header-footer.test.ts` | Header and footer labels, escaping, margin boxes, PDF templates                                   |
+| `diagnostics.test.ts`   | Diagnostics report content (no note content)                                                      |
+| `settings.test.ts`      | Settings defaults and migration                                                                   |
 
 Not testable outside Obsidian, and covered by manual QA instead (`docs/MANUAL_QA.md`): rendering,
 the print panel, the hidden PDF window, the Save panel, vault events and the dialog UI.
