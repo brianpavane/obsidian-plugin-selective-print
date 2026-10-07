@@ -1,7 +1,7 @@
 # STATUS
 
 - Version: 0.4.0 (release candidate for 1.0.0) Pass: 5 Milestone: M5 complete
-- Gate: E State: **open: waiting on Brian**
+- Gate: E State: closed (2026-10-07): staying on 0.4.0, no 1.0.0 release
 
 ## Done
 
@@ -19,11 +19,8 @@ Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-1. Update to 0.4.0 and try the Gate E list in `docs/MANUAL_QA.md` (5 items). Report in plain
-   words.
-2. Review the docs if you want (README and user guide are the user-facing ones).
-3. Sign off on 1.0.0: confirm the release (repo stays public, release notes, tag `1.0.0`).
-   Anything not confirmed is listed as unverified in the release notes.
+Nothing blocking. Next step is Brian's choice of post-0.4.0 work (each needs a Gate F scope
+approval).
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -36,6 +33,10 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian: "I don't think we need to get to 1.0, but yes - let's do this as 0.4.0."
+  0.4.0 is the current release; no 1.0.0 tag. `docs/RELEASE_NOTES_1.0.0.md` stays as a draft
+  for if and when a 1.0 is wanted. The unverified QA items remain listed as unverified.
 
 - 2026-10-07, Brian: Gate D closed. 0.3.1 confirmed: "it allowed me to save on the desktop".
   "Open PDF after saving" kept as an option, off by default (no objection raised).
@@ -127,6 +128,6 @@ reserved), preset fields fall back to settings, and the filename rules.
 
 ## Next
 
-When Brian signs off at Gate E: update the release notes from his report, bump to 1.0.0 (same
-code as 0.4.0 plus any fixes), tag and publish. Then post-1.0 work (M6: HTML and Markdown
-adapters, safe-to-share, URI handler, footer) starts only after a Gate F scope approval.
+Optional, each after a Gate F scope approval: the post-1.0 roadmap items (HTML and Markdown
+adapters, safe-to-share, URI handler, footer; sidebar panel; multi-note packs and embed
+filtering) and the backlog in `docs/BACKLOG.md`.
