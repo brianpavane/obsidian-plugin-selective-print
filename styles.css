@@ -1,0 +1,20 @@
+/* Selective Print: plugin UI styles. */
+
+/* Hidden iframe used by the Print adapter. It stays in the layout (no display:none or
+   visibility:hidden) so Chromium lays out and prints its document; zero size hides it. */
+.selective-print-frame {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border: 0;
+}
+
+.selective-print-diagnostics pre {
+  user-select: text;
+  white-space: pre-wrap;
+  font-size: var(--font-ui-smaller);
+  max-height: 50vh;
+  overflow: auto;
+}

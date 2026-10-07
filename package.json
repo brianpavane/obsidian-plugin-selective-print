@@ -1,0 +1,43 @@
+{
+  "name": "selective-print",
+  "version": "0.0.1",
+  "description": "Print and export Obsidian notes to PDF with section-level control (macOS desktop).",
+  "main": "main.js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "version": "node version-bump.mjs && git add manifest.json versions.json"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "print",
+    "pdf"
+  ],
+  "author": "Brian Pavane",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "26.6.4",
+    "@vitest/coverage-v8": "5.0.3",
+    "esbuild": "0.28.2",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-obsidianmd": "0.4.2",
+    "fast-check": "4.10.2",
+    "obsidian": "1.13.1",
+    "prettier": "3.9.9",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1",
+    "vitest": "5.0.3",
+    "yaml": "2.9.1"
+  }
+}
