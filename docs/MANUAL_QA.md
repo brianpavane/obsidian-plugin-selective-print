@@ -20,6 +20,14 @@ Use the plugin for a few real notes, then answer in plain words:
    note, and no error notices?
 5. Anything you would change before calling it 1.0?
 
+## Quick try-list (0.5.0: header and footer)
+
+1. Print a note: does each page show the folder and note name and "Last modified …" at the top,
+   and "Printed …" and "Page X of Y" at the bottom? If the print panel shows none of them, say
+   so (that is the Chromium page-margin feature being unavailable).
+2. Save a PDF: same check.
+3. Settings → turn **Header and footer** off: the next printout has neither.
+
 ## Full checklist
 
 | #   | Steps                                                                                                                                                                              | Expected                                                                                                                                                                 |
@@ -36,3 +44,4 @@ Use the plugin for a few real notes, then answer in plain words:
 | 10  | When one-click PDF is unavailable or fails (rare on current Obsidian).                                                                                                             | A notice explains why and the print panel opens. Nothing fails silently. Also covered by automated tests with a fake bridge.                                             |
 | 11  | Disable and re-enable the plugin; reload Obsidian (Cmd-R).                                                                                                                         | One printer icon per note, no duplicates, no error notices.                                                                                                              |
 | 12  | Record Obsidian, macOS and plugin versions with each result in `docs/VALIDATION.md`.                                                                                               | Done by Claude from Brian's reports.                                                                                                                                     |
+| 13  | Print and save a PDF of a multi-page note with **Header and footer** on, then off.                                                                                                 | On: header shows the location and last-modified time; footer shows the printed time and Page X of Y, on every page, in both outputs. Off: neither.                       |

@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-07
+
+### Added
+
+- Page header and footer on printouts and PDFs (setting **Header and footer**, on by default):
+  - header: the note's folder and name (left) and **Last modified** date and time (right);
+  - footer: **Printed** date and time (left) and **Page X of Y** (right).
+    PDFs use Electron's header and footer templates; the print panel uses CSS page-margin boxes.
+    All values are escaped.
+
+### Changed
+
+- Margins are limited to 0.4-3 inches so the header and footer are not clipped.
+
 ## [0.4.0] - 2026-10-07
 
 Release candidate for 1.0.0 (M5: hardening and documentation).

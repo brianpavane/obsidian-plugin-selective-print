@@ -9,7 +9,7 @@ post-1.0 work needs a Gate F scope approval (`CLAUDE.md` section 4).
   with a guard against empty output.
 - PDF outline and bookmarks. Check the bundled Electron version first.
 - DOCX via Pandoc. Needs an external binary.
-- Per-preset headers and footers with page numbers, beyond the basic footer text in 1.1.
+- Custom header and footer text or templates, and per-preset header settings (0.5.0 ships a fixed layout with an on/off setting; a preset key needs a schema migration and a gate).
 
 ## Scheduled post-1.0 (listed for reference)
 

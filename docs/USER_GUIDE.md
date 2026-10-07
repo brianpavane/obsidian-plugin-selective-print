@@ -74,6 +74,20 @@ One-click PDF relies on a part of Electron that some Obsidian versions do not of
 unavailable, or anything goes wrong, a notice tells you why and the print dialog opens
 instead. Choose **PDF → Save as PDF** there.
 
+## Header and footer
+
+Every page shows the note's location and when the note was last changed at the top, and when
+it was printed and the page number at the bottom:
+
+```
+Meetings/2026/Weekly Sync               Last modified 2026-10-06 09:12
+Printed 2026-10-07 14:05                                   Page 3 of 7
+```
+
+Turn it off in settings (**Header and footer**), for example when you do not want your folder
+names on a shared printout. In the macOS print panel, leave its own "Print headers and
+footers" option unticked to avoid a second header.
+
 ## Global exclude list
 
 Settings → Selective Print → **Global exclude list**. These headings are excluded by default
@@ -88,24 +102,25 @@ printout. The markers are Obsidian comments, so they are invisible in reading vi
 
 ## Settings reference
 
-| Setting                            | Default                     | What it does                                                                  |
-| ---------------------------------- | --------------------------- | ----------------------------------------------------------------------------- |
-| Always review before output        | On                          | Open the dialog on every print. Shift-click the icon to skip it once.         |
-| Global exclude list                | `Transcript`                | Headings excluded by default in every note.                                   |
-| Presets folder                     | `Print Presets`             | Where preset notes live.                                                      |
-| Starter presets                    | Button                      | Install missing starters; update the ones you have not edited.                |
-| Validate presets                   | Button                      | Report of preset problems.                                                    |
-| Default output                     | Print                       | Print or PDF for the header icon; preselected in the dialog.                  |
-| Save PDF files to                  | Ask where to save           | Save panel on the Desktop, the Desktop, or the vault.                         |
-| PDF folder in the vault            | (next to the note)          | Only when saving into the vault.                                              |
-| PDF file name                      | `{date} - {title}`          | Variables: `{title}` `{date}` `{datetime}` `{preset}` `{frontmatter.<key>}`.  |
-| Open PDF after saving              | Off                         | Opens the new PDF in your PDF app.                                            |
-| Skip empty sections                | On                          | Default for the dialog.                                                       |
-| Paper size / orientation / margins | Letter / portrait / 0.75 in | Page setup for Print and PDF.                                                 |
-| Print style                        | Neutral                     | Neutral prints black on white; Match theme (experimental) uses your theme.    |
-| Show header icon / ribbon icon     | On / Off                    | Where the print button appears.                                               |
-| Diagnostics                        | Button                      | Copies a report for bug reports, with no note content.                        |
-| Debug logging                      | Off                         | Detailed `[SelectivePrint]` logs in the developer console, including timings. |
+| Setting                            | Default                     | What it does                                                                             |
+| ---------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------- |
+| Always review before output        | On                          | Open the dialog on every print. Shift-click the icon to skip it once.                    |
+| Global exclude list                | `Transcript`                | Headings excluded by default in every note.                                              |
+| Presets folder                     | `Print Presets`             | Where preset notes live.                                                                 |
+| Starter presets                    | Button                      | Install missing starters; update the ones you have not edited.                           |
+| Validate presets                   | Button                      | Report of preset problems.                                                               |
+| Default output                     | Print                       | Print or PDF for the header icon; preselected in the dialog.                             |
+| Save PDF files to                  | Ask where to save           | Save panel on the Desktop, the Desktop, or the vault.                                    |
+| PDF folder in the vault            | (next to the note)          | Only when saving into the vault.                                                         |
+| PDF file name                      | `{date} - {title}`          | Variables: `{title}` `{date}` `{datetime}` `{preset}` `{frontmatter.<key>}`.             |
+| Open PDF after saving              | Off                         | Opens the new PDF in your PDF app.                                                       |
+| Skip empty sections                | On                          | Default for the dialog.                                                                  |
+| Paper size / orientation / margins | Letter / portrait / 0.75 in | Page setup for Print and PDF. Margins 0.4-3 in.                                          |
+| Header and footer                  | On                          | Header: folder and note name, last modified. Footer: printed date and time, page X of Y. |
+| Print style                        | Neutral                     | Neutral prints black on white; Match theme (experimental) uses your theme.               |
+| Show header icon / ribbon icon     | On / Off                    | Where the print button appears.                                                          |
+| Diagnostics                        | Button                      | Copies a report for bug reports, with no note content.                                   |
+| Debug logging                      | Off                         | Detailed `[SelectivePrint]` logs in the developer console, including timings.            |
 
 ## Commands
 

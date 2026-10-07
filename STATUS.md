@@ -1,6 +1,6 @@
 # STATUS
 
-- Version: 0.4.0 (release candidate for 1.0.0) Pass: 5 Milestone: M5 complete
+- Version: 0.5.0 Pass: 5 Milestone: M5 complete
 - Gate: E State: closed (2026-10-07): staying on 0.4.0, no 1.0.0 release
 
 ## Done
@@ -19,8 +19,9 @@ Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-Nothing blocking. Next step is Brian's choice of post-0.4.0 work (each needs a Gate F scope
-approval).
+1. Update to 0.5.0 and check the header and footer on a printout and on a PDF (3 quick items
+   in `docs/MANUAL_QA.md`). If the print panel shows no header or footer, Chromium's
+   page-margin feature is missing and I will propose another route.
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -33,6 +34,11 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian (Gate F, header and footer): approved the scope, adding "Last modified"
+  and then swapping positions. Final layout: header = folder and note name | Last modified;
+  footer = Printed | Page X of Y. On by default; no custom templates; preset schema unchanged.
+  Settings gained `headerFooter` (additive; no `schemaVersion` bump).
 
 - 2026-10-07, Brian: "I don't think we need to get to 1.0, but yes - let's do this as 0.4.0."
   0.4.0 is the current release; no 1.0.0 tag. `docs/RELEASE_NOTES_1.0.0.md` stays as a draft
@@ -117,6 +123,8 @@ reserved), preset fields fall back to settings, and the filename rules.
 - PDF: remote (http) images are not inlined; the PDF window loads them as Obsidian does.
 - Whether `afterprint` fires on Cancel is unknown (spike A4 was waived). Mitigation: each new
   print cleans up the previous print frame, and a 5-minute timer is the fallback.
+- Print-panel header and footer rely on CSS page-margin boxes (recent Chromium only); if
+  unsupported they are silently absent. PDFs use Electron templates instead.
 - "Match theme" is experimental: Obsidian's own print CSS may interfere.
 - With the Neutral style, math (MathJax) may lose formatting, because its styles live in the
   Obsidian window.
