@@ -37,6 +37,10 @@ reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
 
+- 2026-10-07, Brian: Gate B closed ("let's keep going") after reporting on 0.1.0: "Print works,
+  and the option to include/exclude empty sections works." No failures reported; the other
+  QA items stay unverified.
+
 - 2026-10-07, Brian: Gate A closed after A1-A3 passed (the print panel opens from the iframe,
   the PDF dropdown works). A4-A7, B1-B2 and C1 were waived: Brian tests by using the plugin,
   not with debug checklists. Spike B (Electron PDF capability) moves to M4, where the PDF
