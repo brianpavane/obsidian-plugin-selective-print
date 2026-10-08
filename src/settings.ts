@@ -1,4 +1,5 @@
 import { DEFAULT_GLOBAL_EXCLUDE, DEFAULT_PRESETS_FOLDER } from "./constants";
+import { DEFAULT_DIGEST_SECTIONS } from "./core/digest";
 
 /**
  * Persisted plugin settings (data.json). Pure module: no Obsidian imports, so the
@@ -26,6 +27,8 @@ export interface SelectivePrintSettings {
   printStyle: PrintStyle;
   /** Page header (location, last modified) and footer (printed, page X of Y). */
   headerFooter: boolean;
+  /** Default sections for digest packs. */
+  digestSections: string[];
   pdfDestination: PdfDestination;
   /** Vault folder used when pdfDestination is "vault" ("" = next to the note). */
   pdfFolder: string;
@@ -51,6 +54,7 @@ export function defaultSettings(): SelectivePrintSettings {
     marginsIn: 0.75,
     printStyle: "neutral",
     headerFooter: true,
+    digestSections: [...DEFAULT_DIGEST_SECTIONS],
     pdfDestination: "ask",
     pdfFolder: "",
     filenameTemplate: "{date} - {title}",

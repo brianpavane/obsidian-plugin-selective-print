@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import { DEFAULT_GLOBAL_EXCLUDE } from "../constants";
+import { DEFAULT_DIGEST_SECTIONS, parseDigestList } from "../core/digest";
 import { validateRuleEntry } from "../core/selection";
 import { copyDiagnostics } from "../obsidian/diagnostics";
 import { vaultFolderPath } from "../obsidian/vault-presets";
@@ -246,6 +247,38 @@ export class SettingsTab extends PluginSettingTab {
           .onChange(async (v) => {
             s.printStyle = v as PrintStyle;
             await this.plugin.saveSettings();
+          }),
+      );
+
+    new Setting(containerEl).setName("Packs").setHeading();
+    const digest = new Setting(containerEl)
+      .setName("Digest sections")
+      .setDesc(
+        "Sections a digest pack keeps, one heading per line. Excluded sections stay excluded.",
+      )
+      .addTextArea((t) => {
+        t.setValue(s.digestSections.join("\n")).onChange(async (v) => {
+          const entries = parseDigestList(v);
+          const bad = entries.map((e) => validateRuleEntry(e)).find((p) => p !== null);
+          digest.descEl.setText(
+            bad ??
+              "Sections a digest pack keeps, one heading per line. Excluded sections stay excluded.",
+          );
+          digest.descEl.toggleClass("selective-print-error", bad !== undefined);
+          if (bad) return;
+          s.digestSections = entries;
+          await this.plugin.saveSettings();
+        });
+        t.inputEl.rows = 3;
+      })
+      .addExtraButton((b) =>
+        b
+          .setIcon("rotate-ccw")
+          .setTooltip("Reset to the default list")
+          .onClick(async () => {
+            s.digestSections = [...DEFAULT_DIGEST_SECTIONS];
+            await this.plugin.saveSettings();
+            this.display();
           }),
       );
 

@@ -13,6 +13,7 @@ describe("migrateSettings", () => {
     expect(s.alwaysReview).toBe(true);
     expect(s.pdfDestination).toBe("ask");
     expect(s.headerFooter).toBe(true);
+    expect(s.digestSections).toEqual(["Decisions", "Action items"]);
     expect(s.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION);
   });
 

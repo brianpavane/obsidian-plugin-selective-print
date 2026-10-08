@@ -149,6 +149,7 @@ export class PackFlow {
           presets: [...this.store.presets],
           adapters: available,
           initialAdapter,
+          digestSections: this.settings().digestSections,
         },
         (choice) => void this.confirmAndOutput(source, choice),
       ).open();
@@ -181,6 +182,8 @@ export class PackFlow {
     const parts: RenderResult[] = [];
     const failures: string[] = [];
     let warningCount = 0;
+    let withoutDigest = 0;
+    const title = choice.digest ? `Digest: ${choice.title}` : choice.title;
     const progress = new Notice(`${PLUGIN_NAME}: rendering 0 of ${choice.notes.length}…`, 0);
     const printedAt = new Date();
     const anchors = new Map(choice.notes.map((n, i) => [n.path, packAnchor(i + 1)]));
@@ -192,7 +195,7 @@ export class PackFlow {
 
       if (choice.cover) {
         const cover = pack.createDiv({ cls: "selective-print-pack-cover" });
-        cover.createEl("h1", { text: choice.title });
+        cover.createEl("h1", { text: title });
         const range = packDateRange(choice.notes);
         if (range)
           cover.createEl("p", {
@@ -234,7 +237,12 @@ export class PackFlow {
             settingsSkipEmpty: s.skipEmpty,
             presetOverride: choice.preset,
             includeTitle: false,
+            digest: choice.digest,
           });
+          if (choice.digest && job.markdown.trim() === "") {
+            withoutDigest++;
+            continue;
+          }
           warningCount += warnings.length;
           for (const w of warnings) this.log.debug(`${n.path}: ${w}`);
           const rendered = await renderJob(this.app, job, note.file.path);
@@ -243,10 +251,13 @@ export class PackFlow {
           this.rewriteLinks(rendered.content, note.file.path, anchors);
 
           const section = pack.createDiv({
-            cls: `selective-print-pack-note${choice.newPage ? " is-new-page" : ""}`,
+            cls: `selective-print-pack-note${choice.newPage ? " is-new-page" : ""}${choice.digest ? " is-digest" : ""}`,
             attr: { id: packAnchor(i + 1) },
           });
-          section.createEl("h1", { text: note.title, cls: "selective-print-title" });
+          section.createEl(choice.digest ? "h2" : "h1", {
+            text: note.title,
+            cls: "selective-print-title",
+          });
           section.createDiv({
             cls: "selective-print-note-meta",
             text: `${noteLocation(note.file.path)} · Last modified ${formatTimestamp(new Date(note.file.stat.mtime))}`,
@@ -268,8 +279,18 @@ export class PackFlow {
           `${PLUGIN_NAME}: ${warningCount} warnings while preparing the pack (turn on Debug logging for details).`,
         );
       }
+      if (choice.digest && withoutDigest) {
+        new Notice(
+          `${PLUGIN_NAME}: ${withoutDigest} ${withoutDigest === 1 ? "note has" : "notes have"} none of the digest sections and ${withoutDigest === 1 ? "was" : "were"} left out.`,
+        );
+      }
       if (parts.length === 0) {
-        new Notice(`${PLUGIN_NAME}: no notes could be rendered; nothing to print.`);
+        new Notice(
+          choice.digest
+            ? `${PLUGIN_NAME}: none of the notes has a section named ${choice.digest.join(", ")}; nothing to print.`
+            : `${PLUGIN_NAME}: no notes could be rendered; nothing to print.`,
+          10000,
+        );
         return;
       }
 
@@ -278,12 +299,11 @@ export class PackFlow {
         orientation: s.orientation,
         marginsIn: s.marginsIn,
       };
-      if (s.headerFooter)
-        options.labels = packLabels({ title: choice.title, count: parts.length, printedAt });
+      if (s.headerFooter) options.labels = packLabels({ title, count: parts.length, printedAt });
       let primary = choice.adapter;
       if (primary.id === "pdf") {
         try {
-          options.target = this.pdfTarget(source, choice.title);
+          options.target = this.pdfTarget(source, title);
         } catch (err) {
           new Notice(
             `${PLUGIN_NAME}: ${err instanceof Error ? err.message : String(err)}. Opening the print dialog instead.`,
@@ -294,7 +314,7 @@ export class PackFlow {
       const result = await runWithFallback(
         primary,
         this.fallback(),
-        { title: choice.title, content: pack, matchTheme: s.printStyle === "match-theme" },
+        { title, content: pack, matchTheme: s.printStyle === "match-theme" },
         options,
         (message) => new Notice(`${PLUGIN_NAME}: ${message}`, 10000),
       );

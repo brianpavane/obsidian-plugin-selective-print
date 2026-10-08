@@ -1,4 +1,6 @@
-import { App, Modal, Setting } from "obsidian";
+import { App, Modal, Setting, type ToggleComponent } from "obsidian";
+import { parseDigestList } from "../core/digest";
+import { validateRuleEntry } from "../core/selection";
 import {
   filterPackByDate,
   moveItem,
@@ -19,6 +21,8 @@ export interface PackContext {
   presets: Preset[];
   adapters: OutputAdapter[];
   initialAdapter: OutputAdapter;
+  /** Default digest sections (from settings). */
+  digestSections: string[];
 }
 
 export interface PackChoice {
@@ -31,6 +35,8 @@ export interface PackChoice {
   contents: boolean;
   newPage: boolean;
   adapter: OutputAdapter;
+  /** Digest: keep only these sections in each note; null for full notes. */
+  digest: string[] | null;
 }
 
 /**
@@ -52,6 +58,13 @@ export class PackModal extends Modal {
   private newPage = true;
   private adapter: OutputAdapter;
   private submitted = false;
+  private digest = false;
+  private digestText = "";
+  private toggles: {
+    cover?: ToggleComponent;
+    contents?: ToggleComponent;
+    newPage?: ToggleComponent;
+  } = {};
 
   private listEl!: HTMLElement;
   private summaryEl!: HTMLElement;
@@ -66,6 +79,7 @@ export class PackModal extends Modal {
     this.all = ctx.notes;
     this.order = sortPackNotes(this.all, this.sort);
     this.adapter = ctx.initialAdapter;
+    this.digestText = ctx.digestSections.join("\n");
   }
 
   onOpen(): void {
@@ -113,6 +127,46 @@ export class PackModal extends Modal {
     range.controlEl.createSpan({ text: "to" });
     dateInput("To", (v) => (this.to = v));
 
+    const digestBox = createDiv();
+    new Setting(contentEl)
+      .setName("Content")
+      .setDesc("Full notes, or a digest with only some sections from each note.")
+      .addDropdown((dd) =>
+        dd
+          .addOption("full", "Full notes")
+          .addOption("digest", "Digest: only these sections")
+          .setValue("full")
+          .onChange((v) => {
+            this.digest = v === "digest";
+            digestBox.toggle(this.digest);
+            // A digest is a compact summary: no cover, contents or page breaks by default.
+            this.cover = this.contents = this.newPage = !this.digest;
+            this.toggles.cover?.setValue(this.cover);
+            this.toggles.contents?.setValue(this.contents);
+            this.toggles.newPage?.setValue(this.newPage);
+            this.refresh();
+          }),
+      );
+    contentEl.appendChild(digestBox);
+    const digestSetting = new Setting(digestBox)
+      .setName("Digest sections")
+      .setDesc("One heading per line. Sections excluded elsewhere stay excluded.")
+      .addTextArea((t) => {
+        t.setValue(this.digestText).onChange((v) => {
+          this.digestText = v;
+          const bad = parseDigestList(v)
+            .map((e) => validateRuleEntry(e))
+            .find((p) => p !== null);
+          digestSetting.descEl.setText(
+            bad ?? "One heading per line. Sections excluded elsewhere stay excluded.",
+          );
+          digestSetting.descEl.toggleClass("selective-print-error", bad !== undefined);
+          this.refresh();
+        });
+        t.inputEl.rows = 3;
+      });
+    digestBox.hide();
+
     new Setting(contentEl)
       .setName("Sections")
       .setDesc("Each note uses its own preset and exclusions, or one preset for all.")
@@ -126,16 +180,21 @@ export class PackModal extends Modal {
           this.preset = v === "" ? null : (all[Number(v)] ?? null);
         });
       });
-    new Setting(contentEl)
-      .setName("Cover page")
-      .addToggle((t) => t.setValue(this.cover).onChange((v) => (this.cover = v)));
+    new Setting(contentEl).setName("Cover page").addToggle((t) => {
+      this.toggles.cover = t;
+      t.setValue(this.cover).onChange((v) => (this.cover = v));
+    });
     new Setting(contentEl)
       .setName("Contents")
       .setDesc("Note titles in order; clickable in the PDF.")
-      .addToggle((t) => t.setValue(this.contents).onChange((v) => (this.contents = v)));
-    new Setting(contentEl)
-      .setName("Each note on a new page")
-      .addToggle((t) => t.setValue(this.newPage).onChange((v) => (this.newPage = v)));
+      .addToggle((t) => {
+        this.toggles.contents = t;
+        t.setValue(this.contents).onChange((v) => (this.contents = v));
+      });
+    new Setting(contentEl).setName("Each note on a new page").addToggle((t) => {
+      this.toggles.newPage = t;
+      t.setValue(this.newPage).onChange((v) => (this.newPage = v));
+    });
     new Setting(contentEl).setName("Output").addDropdown((dd) => {
       for (const a of this.ctx.adapters) dd.addOption(a.id, a.label);
       dd.setValue(this.adapter.id);
@@ -213,7 +272,11 @@ export class PackModal extends Modal {
       `${selected} of ${notes.length} ${notes.length === 1 ? "note" : "notes"} selected` +
         (undated ? `; ${undated} without a date left out by the date range` : ""),
     );
-    this.primary.disabled = selected === 0;
+    const digestEntries = parseDigestList(this.digestText);
+    const digestInvalid =
+      this.digest &&
+      (digestEntries.length === 0 || digestEntries.some((e) => validateRuleEntry(e) !== null));
+    this.primary.disabled = selected === 0 || digestInvalid;
   }
 
   private submit(): void {
@@ -229,6 +292,7 @@ export class PackModal extends Modal {
       contents: this.contents,
       newPage: this.newPage,
       adapter: this.adapter,
+      digest: this.digest ? parseDigestList(this.digestText) : null,
     });
   }
 

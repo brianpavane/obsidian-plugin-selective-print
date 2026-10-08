@@ -221,3 +221,15 @@ body.selective-print-neutral .metadata-container {
   font-size: 9pt;
   margin: -0.25em 0 1em;
 }
+
+/* Digest packs: compact, one block per note. */
+.selective-print-pack-note.is-digest {
+  margin-bottom: 1.25em;
+  padding-bottom: 0.75em;
+  border-bottom: 1px solid #ddd;
+  break-inside: avoid-page;
+}
+
+.selective-print-pack-note.is-digest .selective-print-title {
+  margin-bottom: 0.1em;
+}
