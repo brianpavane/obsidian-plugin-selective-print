@@ -1,3 +1,4 @@
+import { digestSelection } from "./digest";
 import { buildJob, type PrintJob } from "./job";
 import { readNoteOverrides } from "./note-keys";
 import { defaultPreset, matchPresets, type NoteFacts, type Preset } from "./presets";
@@ -18,6 +19,8 @@ export interface NoteJobInput {
   /** Use this preset for the note instead of the matched one (packs: "same preset for all"). */
   presetOverride?: Preset | null;
   includeTitle?: boolean;
+  /** Digest packs: keep only these sections (exclusions still win). */
+  digest?: readonly string[] | null;
 }
 
 export interface NoteJob {
@@ -44,9 +47,15 @@ export function defaultJobForNote(input: NoteJobInput): NoteJob {
     noteExclude: overrides.noteExclude,
   });
   const omit = new Set(preset.properties.list.map((k) => k.toLowerCase()));
+  let included = finalSelection(r.defaults);
+  if (input.digest) {
+    const d = digestSelection(input.tree, included, input.digest);
+    included = d.included;
+    warnings.push(...d.warnings.map((w) => `digest: ${w.message}`));
+  }
   const job = buildJob({
     tree: input.tree,
-    included: finalSelection(r.defaults),
+    included,
     title: input.note.title,
     includeTitle: input.includeTitle ?? preset.includeTitle,
     skipEmpty: preset.sections.skipEmpty ?? input.settingsSkipEmpty,
