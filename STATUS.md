@@ -42,7 +42,7 @@ reserved), preset fields fall back to settings, and the filename rules.
 - 2026-10-08, Brian: meeting notes do not print their properties by default; the dialog's
   existing **Include properties** control turns them on. Done through the three meeting
   starters (`properties: mode: none`, v3), so other notes still print properties. Folded into
-  0.8.0 (not yet published).
+  0.8.0 (published 2026-10-08).
 - 2026-10-08, Claude: the recap's exclusions are one `regex:` entry so notes with only some of
   those headings show no "not found" warning. An unedited 0.7.0 digest list is upgraded in
   `migrateSettings` (additive; no `schemaVersion` bump). Weekly review matches
