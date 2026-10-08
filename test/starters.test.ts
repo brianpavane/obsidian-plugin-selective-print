@@ -39,13 +39,13 @@ describe("bundled starters", () => {
       const p = loaded.presets.find((x) => x.name === s.name);
       expect(p?.starterVersion).toBe(s.version);
       expect(s.content).toMatch(
-        /<!-- verified against (README, not against live notes|live notes by Brian, 2026-10-07) -->/,
+        /<!-- verified against (README, not against live notes|live notes by Brian, 2026-10-07|the Meeting Notes plugin's note layout \(6\.20\.1\), 2026-10-08)/,
       );
     }
   });
 
   it("meeting starters are verified against live notes (v2) and upgrade unmodified v1 copies", () => {
-    for (const name of ["Meeting notes", "Meeting recap", "Meeting full (with transcript)"]) {
+    for (const name of ["Meeting notes", "Meeting full (with transcript)"]) {
       const s = STARTERS.find((x) => x.name === name);
       expect(s?.version).toBe(2);
       expect(s?.content).toContain("<!-- verified against live notes by Brian, 2026-10-07 -->");
@@ -58,9 +58,20 @@ describe("bundled starters", () => {
         );
       expect(s?.shippedHashes[0]).toBe(starterHash(v1 ?? ""));
     }
-    for (const name of ["Meeting tracker", "Weekly review"]) {
-      expect(STARTERS.find((x) => x.name === name)?.content).toContain("verified against README");
-    }
+    expect(STARTERS.find((x) => x.name === "Meeting tracker")?.content).toContain(
+      "verified against README",
+    );
+  });
+
+  it("recap v3 and weekly review v2 upgrade unmodified older copies", () => {
+    expect(STARTERS.find((x) => x.name === "Meeting recap")).toMatchObject({
+      version: 3,
+      shippedHashes: ["85e27c84", "558971de", expect.any(String)],
+    });
+    expect(STARTERS.find((x) => x.name === "Weekly review")).toMatchObject({
+      version: 2,
+      shippedHashes: ["df82f29d", expect.any(String)],
+    });
   });
 
   it("the bundled file on disk equals the bundled string", () => {
@@ -92,25 +103,74 @@ describe("bundled starters", () => {
     ).toEqual(["Meeting notes", "Meeting full (with transcript)", "Meeting recap"]);
   });
 
-  it("Meeting recap names headings that exist in the generated note (no drift)", () => {
-    const tree = parseSections(loadFixture("meeting-generated.md"));
-    const recap = loaded.presets.find((p) => p.name === "Meeting recap");
-    expect(findMissingHeadings(tree, recap?.sections.exclude ?? [])).toEqual([]);
+  const recap = loaded.presets.find((p) => p.name === "Meeting recap");
+
+  function recapTitles(fixture: string): string[] {
+    const tree = parseSections(loadFixture(fixture));
+    const included = finalSelection(
+      resolveDefaults({ tree, globalExclude: ["Transcript"], preset: recap?.sections }).defaults,
+    );
+    return tree.all.filter((s) => s.level === 2 && included.has(s.id)).map((s) => s.title);
+  }
+
+  it.each(["meeting-generated.md", "meeting-new-format.md", "meeting-mixed.md"])(
+    "Meeting recap shows no drift warning on %s",
+    (fixture) => {
+      const tree = parseSections(loadFixture(fixture));
+      expect(findMissingHeadings(tree, recap?.sections.exclude ?? [])).toEqual([]);
+    },
+  );
+
+  it("Meeting recap keeps summary, next steps, decisions and additional items in every layout", () => {
+    expect(recapTitles("meeting-generated.md")).toEqual([
+      "Meeting Summary",
+      "Decisions",
+      "Action items",
+    ]);
+    expect(recapTitles("meeting-new-format.md")).toEqual([
+      "Executive Summary",
+      "Next Steps",
+      "Key Decisions",
+      "Additional Items",
+    ]);
+    expect(recapTitles("meeting-mixed.md")).toEqual([
+      "Meeting Summary",
+      "Decisions",
+      "Action items",
+      "Additional Items",
+    ]);
   });
 
-  it("tracker and weekly review match by filename and folder", () => {
+  it("Meeting notes leaves out only the transcript in the new layout", () => {
+    const tree = parseSections(loadFixture("meeting-new-format.md"));
+    const notes = loaded.presets.find((p) => p.name === "Meeting notes");
+    const included = finalSelection(
+      resolveDefaults({ tree, globalExclude: ["Transcript"], preset: notes?.sections }).defaults,
+    );
+    const left = tree.all.filter((s) => s.level === 2 && !included.has(s.id)).map((s) => s.title);
+    expect(left).toEqual(["Transcript"]);
+  });
+
+  it("tracker matches by filename; weekly review by type, wherever it is", () => {
     const tracker = matchPresets(loaded.presets, {
-      path: "Meeting Tracker 2026.md",
+      path: "Meeting Hub/Meeting Tracker.md",
       properties: {},
       tags: [],
     });
     expect(defaultPreset(tracker).name).toBe("Meeting tracker");
-    const weekly = matchPresets(loaded.presets, {
-      path: "Weekly Reviews/2026-W41.md",
-      properties: {},
-      tags: [],
-    });
-    expect(defaultPreset(weekly).name).toBe("Weekly review");
+    for (const path of [
+      "Meetings/Weekly Reviews/2026-W41.md",
+      "Meeting Hub/Weekly Reviews/2026-W41.md",
+    ]) {
+      const weekly = matchPresets(loaded.presets, {
+        path,
+        properties: { type: "weekly-review" },
+        tags: [],
+      });
+      expect(defaultPreset(weekly).name).toBe("Weekly review");
+    }
+    const tree = parseSections(loadFixture("weekly-review.md"));
+    expect(tree.all.some((s) => s.title === "My review")).toBe(true);
   });
 });
 

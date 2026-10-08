@@ -22,10 +22,10 @@ function def(
 
 export const STARTERS: readonly StarterDef[] = [
   def("Meeting notes", "Meeting notes.md", 2, meetingNotes, ["f97954e4"]),
-  def("Meeting recap", "Meeting recap.md", 2, meetingRecap, ["85e27c84"]),
+  def("Meeting recap", "Meeting recap.md", 3, meetingRecap, ["85e27c84", "558971de"]),
   def("Meeting full (with transcript)", "Meeting full (with transcript).md", 2, meetingFull, [
     "60985100",
   ]),
   def("Meeting tracker", "Meeting tracker.md", 1, meetingTracker),
-  def("Weekly review", "Weekly review.md", 1, weeklyReview),
+  def("Weekly review", "Weekly review.md", 2, weeklyReview, ["df82f29d"]),
 ];
