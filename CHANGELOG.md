@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-08
+
+### Changed
+
+- **Works with both meeting note layouts** from the Meeting Notes plugin: the older one
+  (Meeting Summary, Decisions, Action items) and the six-section write-up from its 6.20 update
+  (Executive Summary, Next Steps, Summary by Topic, Key Decisions, Additional Items, Speakers).
+- **Meeting recap** (starter v3) keeps the summary, next steps or action items, decisions and
+  Additional Items in either layout, and leaves out Agenda, Notes, Summary by Topic and Speakers
+  (plus the transcript). No "not found" warning on notes that have only some of these.
+- **Weekly review** (starter v2) now applies to notes with `type: weekly-review`, wherever they
+  are. Before, it only matched a `Weekly Reviews` folder at the top of the vault, so reviews in
+  the meeting-notes folder or the Meeting Hub were missed.
+- **Digest sections** default: Decisions, Action items, Key Decisions, Next Steps. If you never
+  changed the list, it updates automatically; an edited list is left alone.
+
+Unedited copies of the two starters update automatically; edited copies are left alone.
+
 ## [0.7.0] - 2026-10-07
 
 ### Added

@@ -79,7 +79,8 @@ The pack dialog lets you:
 
 **Digest packs.** Set **Content** to **Digest: only these sections** to print just some
 sections from every note, for example a one-page summary of this week's decisions and action
-items. The default list (Decisions, Action items) is in Settings → Packs → **Digest sections**;
+items. The default list (Decisions, Action items, Key Decisions, Next Steps, so both meeting
+note layouts work) is in Settings → Packs → **Digest sections**;
 edit it in the dialog for one pack. Subsections come along, excluded sections stay excluded,
 and notes with none of the sections are left out (the plugin tells you how many). A digest
 starts compact: no cover, contents or page break per note, though you can turn them on.
@@ -138,26 +139,26 @@ printout. The markers are Obsidian comments, so they are invisible in reading vi
 
 ## Settings reference
 
-| Setting                            | Default                     | What it does                                                                             |
-| ---------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------- |
-| Always review before output        | On                          | Open the dialog on every print. Shift-click the icon to skip it once.                    |
-| Global exclude list                | `Transcript`                | Headings excluded by default in every note.                                              |
-| Presets folder                     | `Print Presets`             | Where preset notes live.                                                                 |
-| Starter presets                    | Button                      | Install missing starters; update the ones you have not edited.                           |
-| Validate presets                   | Button                      | Report of preset problems.                                                               |
-| Default output                     | Print                       | Print or PDF for the header icon; preselected in the dialog.                             |
-| Save PDF files to                  | Ask where to save           | Save panel on the Desktop, the Desktop, or the vault.                                    |
-| PDF folder in the vault            | (next to the note)          | Only when saving into the vault.                                                         |
-| PDF file name                      | `{date} - {title}`          | Variables: `{title}` `{date}` `{datetime}` `{preset}` `{frontmatter.<key>}`.             |
-| Open PDF after saving              | Off                         | Opens the new PDF in your PDF app.                                                       |
-| Skip empty sections                | On                          | Default for the dialog.                                                                  |
-| Paper size / orientation / margins | Letter / portrait / 0.75 in | Page setup for Print and PDF. Margins 0.4-3 in.                                          |
-| Header and footer                  | On                          | Header: folder and note name, last modified. Footer: printed date and time, page X of Y. |
-| Digest sections                    | Decisions, Action items     | Sections a digest pack keeps, one per line.                                              |
-| Print style                        | Neutral                     | Neutral prints black on white; Match theme (experimental) uses your theme.               |
-| Show header icon / ribbon icon     | On / Off                    | Where the print button appears.                                                          |
-| Diagnostics                        | Button                      | Copies a report for bug reports, with no note content.                                   |
-| Debug logging                      | Off                         | Detailed `[SelectivePrint]` logs in the developer console, including timings.            |
+| Setting                            | Default                                            | What it does                                                                             |
+| ---------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Always review before output        | On                                                 | Open the dialog on every print. Shift-click the icon to skip it once.                    |
+| Global exclude list                | `Transcript`                                       | Headings excluded by default in every note.                                              |
+| Presets folder                     | `Print Presets`                                    | Where preset notes live.                                                                 |
+| Starter presets                    | Button                                             | Install missing starters; update the ones you have not edited.                           |
+| Validate presets                   | Button                                             | Report of preset problems.                                                               |
+| Default output                     | Print                                              | Print or PDF for the header icon; preselected in the dialog.                             |
+| Save PDF files to                  | Ask where to save                                  | Save panel on the Desktop, the Desktop, or the vault.                                    |
+| PDF folder in the vault            | (next to the note)                                 | Only when saving into the vault.                                                         |
+| PDF file name                      | `{date} - {title}`                                 | Variables: `{title}` `{date}` `{datetime}` `{preset}` `{frontmatter.<key>}`.             |
+| Open PDF after saving              | Off                                                | Opens the new PDF in your PDF app.                                                       |
+| Skip empty sections                | On                                                 | Default for the dialog.                                                                  |
+| Paper size / orientation / margins | Letter / portrait / 0.75 in                        | Page setup for Print and PDF. Margins 0.4-3 in.                                          |
+| Header and footer                  | On                                                 | Header: folder and note name, last modified. Footer: printed date and time, page X of Y. |
+| Digest sections                    | Decisions, Action items, Key Decisions, Next Steps | Sections a digest pack keeps, one per line.                                              |
+| Print style                        | Neutral                                            | Neutral prints black on white; Match theme (experimental) uses your theme.               |
+| Show header icon / ribbon icon     | On / Off                                           | Where the print button appears.                                                          |
+| Diagnostics                        | Button                                             | Copies a report for bug reports, with no note content.                                   |
+| Debug logging                      | Off                                                | Detailed `[SelectivePrint]` logs in the developer console, including timings.            |
 
 ## Commands
 

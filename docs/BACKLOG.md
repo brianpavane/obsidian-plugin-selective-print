@@ -5,8 +5,9 @@ post-1.0 work needs a Gate F scope approval (`CLAUDE.md` section 4).
 
 ## Deferred by the spec
 
-- Include lists and an include-only mode: a global toggle and a `print-include` note key, Digest packs (0.7.0) cover the multi-note case; single notes stay exclude-only.
-  with a guard against empty output.
+- Include lists and an include-only mode: a global toggle and a `print-include` note key,
+  with a guard against empty output. Digest packs (0.7.0) cover the multi-note case; single
+  notes stay exclude-only.
 - PDF outline and bookmarks. Check the bundled Electron version first.
 - DOCX via Pandoc. Needs an external binary.
 - Custom header and footer text or templates, and per-preset header settings (0.5.0 ships a fixed layout with an on/off setting; a preset key needs a schema migration and a gate).
@@ -32,5 +33,8 @@ post-1.0 work needs a Gate F scope approval (`CLAUDE.md` section 4).
   `type: meeting` without the alphabetical first one becoming the default. Schema change;
   needs a gate.
 - Save panel: start in the last folder used instead of the Desktop.
+- Starter presets for the Meeting Notes plugin's series notes (`type: meeting-series`), account
+  overviews (`type: meeting-account`) and Meeting Insights. Not needed today: they print fine
+  with the default rules (Brian, 2026-10-08).
 - Optional "Copy as filename" setting: propose `{date} - {title}` instead of the note title in
   the print panel's PDF dropdown.

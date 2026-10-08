@@ -38,6 +38,17 @@ Use the plugin for a few real notes, then answer in plain words:
 3. Select three notes with Cmd-click → right-click → **Print selected notes…** → Print.
 4. Cmd-P → **Print notes by tag or property…** → `type: meeting`.
 
+## Quick try-list (0.8.0: both meeting note layouts)
+
+1. On a meeting note made since the Meeting Notes plugin's 6.20 update, open the print dialog
+   and pick **Meeting recap**. Kept: Executive Summary, Next Steps, Key Decisions, Additional
+   Items. Unchecked: Agenda, Notes, Summary by Topic, Speakers, Transcript. No "not found"
+   warning.
+2. The same on an older meeting note: kept Meeting Summary, Decisions, Action items.
+3. Open the dialog on a weekly review: is **Weekly review** selected?
+4. A digest pack over a week with old and new notes: each shows its decisions and next steps
+   (or action items).
+
 ## Quick try-list (0.7.0: digest packs)
 
 1. Right-click your meetings folder → **Print folder…** → date range for one week →

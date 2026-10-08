@@ -130,16 +130,30 @@ current choices:
 ## Starter presets
 
 On first run the plugin copies these starters into the presets folder. The three meeting
-starters were checked against real meeting notes (2026-10-07). The tracker and weekly review
-starters are minimal and only checked against the Meeting Notes plugin's README.
+starters were checked against real meeting notes (2026-10-07). On 2026-10-08 Meeting recap and
+Weekly review were updated for the Meeting Notes plugin's 6.20 layout (checked against its
+source, not yet against your notes). The tracker starter is minimal and only checked against
+that plugin's README.
 
-| Starter                        | Applies to                   | Leaves out                                |
-| ------------------------------ | ---------------------------- | ----------------------------------------- |
-| Meeting notes                  | `type: meeting`              | Transcript (global list), empty sections  |
-| Meeting recap                  | (pick it by hand)            | Transcript, Agenda, Notes, empty sections |
-| Meeting full (with transcript) | (pick it by hand)            | nothing (`inherit-global: false`)         |
-| Meeting tracker                | file name `Meeting Tracker*` | Transcript (global list)                  |
-| Weekly review                  | folder `Weekly Reviews`      | Transcript (global list)                  |
+Meeting notes come in two layouts, and every meeting starter handles both:
+
+| Older notes     | Newer notes (six-section write-up)           |
+| --------------- | -------------------------------------------- |
+| Meeting Summary | Executive Summary                            |
+| Action items    | Next Steps                                   |
+| Decisions       | Key Decisions                                |
+| (none)          | Summary by Topic, Additional Items, Speakers |
+
+Agenda, Notes and Transcript are in both. An older note that got an AI reply later can have
+some of each.
+
+| Starter                        | Applies to                   | Leaves out                                                            |
+| ------------------------------ | ---------------------------- | --------------------------------------------------------------------- |
+| Meeting notes                  | `type: meeting`              | Transcript (global list), empty sections                              |
+| Meeting recap                  | (pick it by hand)            | Transcript, Agenda, Notes, Summary by Topic, Speakers, empty sections |
+| Meeting full (with transcript) | (pick it by hand)            | nothing (`inherit-global: false`)                                     |
+| Meeting tracker                | file name `Meeting Tracker*` | Transcript (global list)                                              |
+| Weekly review                  | `type: weekly-review`        | Transcript (global list)                                              |
 
 **Upgrades:** a plugin update adds new starters and updates starters you have not edited.
 
@@ -175,7 +189,8 @@ selective-print-preset: true
 preset-version: 1
 name: Weekly review (shareable)
 applies-to:
-  - folder: Weekly Reviews
+  - property: type
+    equals: weekly-review
 sections:
   exclude: [Reflections, "regex:^Private"]
 callouts:

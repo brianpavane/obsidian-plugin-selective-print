@@ -1,7 +1,7 @@
 # STATUS
 
-- Version: 0.7.0 Pass: 5 Milestone: M5 complete
-- Gate: E State: closed (2026-10-07): staying on 0.4.0, no 1.0.0 release
+- Version: 0.8.0 Pass: post-1.0 Milestone: meeting note layouts
+- Gate: F (0.8.0 scope) State: open: waiting on Brian to try 0.8.0
 
 ## Done
 
@@ -19,9 +19,9 @@ Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-1. Update to 0.7.0 and try a one-week digest pack (2 quick items in `docs/MANUAL_QA.md`).
-2. Optional: the tracker and weekly review starters pick-up check (open the dialog on one of
-   each; is the matching preset selected?).
+1. Update to 0.8.0 and try the 0.8.0 list in `docs/MANUAL_QA.md` (recap on a new and an old
+   meeting note, weekly review pick-up, a one-week digest pack). This also covers the 0.7.0
+   digest try.
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -34,6 +34,16 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-08, Brian: update to match the Meeting Notes plugin's new (6.20) and old note
+  layouts, as 0.8.0. Meeting recap keeps **Additional Items** ("it should be kept in"); drops
+  Agenda, Notes, Summary by Topic, Speakers. No starters for series notes or account overviews
+  (Claude's recommendation, not objected to; in the backlog).
+- 2026-10-08, Claude: the recap's exclusions are one `regex:` entry so notes with only some of
+  those headings show no "not found" warning. An unedited 0.7.0 digest list is upgraded in
+  `migrateSettings` (additive; no `schemaVersion` bump). Weekly review matches
+  `type: weekly-review` instead of the root `Weekly Reviews` folder (which missed reviews in
+  subfolders).
 
 - 2026-10-07, Brian ("go"): digest packs approved as a **packs-only exception** to the
   exclude-only rule (CLAUDE.md section 3, item 3, now records the exception). Exclusions still
@@ -145,7 +155,8 @@ reserved), preset fields fall back to settings, and the filename rules.
 - "Match theme" is experimental: Obsidian's own print CSS may interfere.
 - With the Neutral style, math (MathJax) may lose formatting, because its styles live in the
   Obsidian window.
-- Tracker and weekly review starter headings are README-based (meeting starters verified).
+- Recap v3 and weekly review v2 follow the Meeting Notes plugin's source (6.20.1), not yet
+  checked on live notes. The tracker starter is README-based.
 - "Remember" cannot store every selection exactly (a subheading kept under an excluded
   parent, duplicate heading names, the preamble). The user gets a notice when this happens.
 - Settings are not yet in Obsidian 1.13+ settings search (declarative settings API); see the
