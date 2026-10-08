@@ -9,7 +9,19 @@ import type { CoreWarning, SectionTree } from "./types";
  * normally included sections, so a digest can never bring back an excluded Transcript.
  */
 
-export const DEFAULT_DIGEST_SECTIONS: readonly string[] = ["Decisions", "Action items"];
+/**
+ * Both meeting note layouts: the older one (Decisions, Action items) and the six-section
+ * write-up (Key Decisions, Next Steps). Notes only have one pair, so the other never matches.
+ */
+export const DEFAULT_DIGEST_SECTIONS: readonly string[] = [
+  "Decisions",
+  "Action items",
+  "Key Decisions",
+  "Next Steps",
+];
+
+/** The 0.7.0 default. A stored list equal to it was never edited and is upgraded. */
+export const LEGACY_DIGEST_SECTIONS: readonly string[] = ["Decisions", "Action items"];
 
 export interface DigestResult {
   included: Set<string>;

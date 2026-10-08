@@ -1,5 +1,5 @@
 import { DEFAULT_GLOBAL_EXCLUDE, DEFAULT_PRESETS_FOLDER } from "./constants";
-import { DEFAULT_DIGEST_SECTIONS } from "./core/digest";
+import { DEFAULT_DIGEST_SECTIONS, LEGACY_DIGEST_SECTIONS } from "./core/digest";
 
 /**
  * Persisted plugin settings (data.json). Pure module: no Obsidian imports, so the
@@ -115,6 +115,14 @@ export function migrateSettings(raw: unknown): SelectivePrintSettings {
       target[key] = value;
     }
   }
+  // 0.8.0: an unedited 0.7.0 digest list gains the six-section names (additive, no schema bump).
+  if (sameList(result.digestSections, LEGACY_DIGEST_SECTIONS)) {
+    result.digestSections = [...DEFAULT_DIGEST_SECTIONS];
+  }
   result.schemaVersion = SETTINGS_SCHEMA_VERSION;
   return result;
+}
+
+function sameList(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
 }

@@ -13,8 +13,20 @@ describe("migrateSettings", () => {
     expect(s.alwaysReview).toBe(true);
     expect(s.pdfDestination).toBe("ask");
     expect(s.headerFooter).toBe(true);
-    expect(s.digestSections).toEqual(["Decisions", "Action items"]);
+    expect(s.digestSections).toEqual(["Decisions", "Action items", "Key Decisions", "Next Steps"]);
     expect(s.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION);
+  });
+
+  it("upgrades an unedited 0.7.0 digest list and keeps an edited one", () => {
+    expect(
+      migrateSettings({ digestSections: ["Decisions", "Action items"] }).digestSections,
+    ).toEqual(["Decisions", "Action items", "Key Decisions", "Next Steps"]);
+    expect(migrateSettings({ digestSections: ["Decisions"] }).digestSections).toEqual([
+      "Decisions",
+    ]);
+    expect(
+      migrateSettings({ digestSections: ["Action items", "Decisions"] }).digestSections,
+    ).toEqual(["Action items", "Decisions"]);
   });
 
   it("keeps valid stored values", () => {

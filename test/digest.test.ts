@@ -58,6 +58,19 @@ describe("digestSelection", () => {
     expect(digestSelection(tree, defaults, ["Risks"]).included.size).toBe(0);
   });
 
+  it.each([
+    ["meeting-generated.md", ["Decisions", "Action items"]],
+    ["meeting-new-format.md", ["Next Steps", "Key Decisions"]],
+    ["meeting-mixed.md", ["Decisions", "Action items"]],
+  ])("the default list picks up both meeting layouts: %s", (fixture, want) => {
+    const md = loadFixture(fixture);
+    const t = parseSections(md);
+    const inc = finalSelection(
+      resolveDefaults({ tree: t, globalExclude: ["Transcript"] }).defaults,
+    );
+    expect(titles(md, digestSelection(t, inc, DEFAULT_DIGEST_SECTIONS).included)).toEqual(want);
+  });
+
   it("parses the settings text, one heading per line", () => {
     expect(parseDigestList(" Decisions \n\nAction items\r\nregex:^Next, steps{1,2}\n")).toEqual([
       "Decisions",
