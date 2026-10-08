@@ -5,7 +5,7 @@ post-1.0 work needs a Gate F scope approval (`CLAUDE.md` section 4).
 
 ## Deferred by the spec
 
-- Include lists and an include-only mode: a global toggle and a `print-include` note key,
+- Include lists and an include-only mode: a global toggle and a `print-include` note key, Digest packs (0.7.0) cover the multi-note case; single notes stay exclude-only.
   with a guard against empty output.
 - PDF outline and bookmarks. Check the bundled Electron version first.
 - DOCX via Pandoc. Needs an external binary.

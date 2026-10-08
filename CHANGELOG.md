@@ -6,6 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-07
+
+### Added
+
+- **Digest packs:** the pack dialog's new **Content** choice, **Digest: only these
+  sections**, keeps just the named sections from every note (default: Decisions and Action
+  items). Typical use: one compact page of this week's decisions and action items.
+  - Subsections come along; excluded sections (for example Transcript) stay excluded; empty
+    placeholder sections are skipped.
+  - Notes with none of the sections are left out, with a count. If no note has any, nothing
+    prints and a notice explains why.
+  - Compact layout by default (no cover, contents or page break per note; each can be turned
+    back on). The title becomes "Digest: <pack title>".
+  - Settings → Packs → **Digest sections** sets the default list.
+
+This is a packs-only exception to the exclude-only rule, approved by Brian on 2026-10-07.
+
 ## [0.6.1] - 2026-10-07
 
 ### Changed

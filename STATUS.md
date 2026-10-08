@@ -1,6 +1,6 @@
 # STATUS
 
-- Version: 0.6.1 Pass: 5 Milestone: M5 complete
+- Version: 0.7.0 Pass: 5 Milestone: M5 complete
 - Gate: E State: closed (2026-10-07): staying on 0.4.0, no 1.0.0 release
 
 ## Done
@@ -19,8 +19,9 @@ Nothing. Stopped at Gate E.
 
 ## Waiting on Brian
 
-Nothing. 0.6.0 reported working on 2026-10-07 ("This is working as it should be"). Header and footer
-confirmed separately ("The header/footer are good").
+1. Update to 0.7.0 and try a one-week digest pack (2 quick items in `docs/MANUAL_QA.md`).
+2. Optional: the tracker and weekly review starters pick-up check (open the dialog on one of
+   each; is the matching preset selected?).
 
 ## Core semantics (approved by Brian on 2026-10-07, open to change)
 
@@ -33,6 +34,11 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian ("go"): digest packs approved as a **packs-only exception** to the
+  exclude-only rule (CLAUDE.md section 3, item 3, now records the exception). Exclusions still
+  win; empty-output guard; no `print-include`; preset schema unchanged. Settings gained
+  `digestSections` (additive).
 
 - 2026-10-07, Brian: meeting starters verified on real notes ("So far all good"). Shipped as
   `starter-version: 2` with the verified marker (0.6.1).

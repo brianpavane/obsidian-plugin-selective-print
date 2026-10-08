@@ -77,6 +77,13 @@ The pack dialog lets you:
 - Choose **Print** or **PDF**. A PDF is named `{date} - <pack title>.pdf` and goes where
   **Save PDF files to** says.
 
+**Digest packs.** Set **Content** to **Digest: only these sections** to print just some
+sections from every note, for example a one-page summary of this week's decisions and action
+items. The default list (Decisions, Action items) is in Settings → Packs → **Digest sections**;
+edit it in the dialog for one pack. Subsections come along, excluded sections stay excluded,
+and notes with none of the sections are left out (the plugin tells you how many). A digest
+starts compact: no cover, contents or page break per note, though you can turn them on.
+
 Each note starts with its title and a line with its location and last-modified time. Links
 between notes in the pack jump within the document. Large packs show progress; packs over 50
 notes ask first.
@@ -146,6 +153,7 @@ printout. The markers are Obsidian comments, so they are invisible in reading vi
 | Skip empty sections                | On                          | Default for the dialog.                                                                  |
 | Paper size / orientation / margins | Letter / portrait / 0.75 in | Page setup for Print and PDF. Margins 0.4-3 in.                                          |
 | Header and footer                  | On                          | Header: folder and note name, last modified. Footer: printed date and time, page X of Y. |
+| Digest sections                    | Decisions, Action items     | Sections a digest pack keeps, one per line.                                              |
 | Print style                        | Neutral                     | Neutral prints black on white; Match theme (experimental) uses your theme.               |
 | Show header icon / ribbon icon     | On / Off                    | Where the print button appears.                                                          |
 | Diagnostics                        | Button                      | Copies a report for bug reports, with no note content.                                   |

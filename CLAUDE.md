@@ -41,6 +41,7 @@ Milestone details and acceptance criteria are in `SPEC.md` section 10. Do not st
 1. **macOS desktop only.** No Windows/Linux/mobile code paths. `isDesktopApp` and macOS checks show a clear notice otherwise.
 2. **No coupling to other plugins.** Never read, import, detect or integrate with any other plugin's code, settings or data. Starter presets are static data files that match a note format. The plugin sees only note files in the vault.
 3. **Exclude-only through v1.0.** No include lists, no include-only mode, no `print-include`. Those are in the backlog.
+   *Exception approved by Brian on 2026-10-07:* **digest packs** may keep only named sections (multi-note packs only; exclusions still win; empty-output guard). Single notes stay exclude-only.
 4. **Default behavior:** the global exclude list is prepopulated with `Transcript`; the review dialog lists excluded sections unchecked so Brian can opt in at print time; "Always review before output" defaults to on.
 5. **No network access, telemetry, accounts or remote services.** Ever.
 6. **Pure core.** Everything in `src/core/` takes plain data and has no Obsidian or DOM imports. Business logic never lives in `main.ts`, triggers or modals.

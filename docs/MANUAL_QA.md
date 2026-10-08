@@ -38,6 +38,14 @@ Use the plugin for a few real notes, then answer in plain words:
 3. Select three notes with Cmd-click → right-click → **Print selected notes…** → Print.
 4. Cmd-P → **Print notes by tag or property…** → `type: meeting`.
 
+## Quick try-list (0.7.0: digest packs)
+
+1. Right-click your meetings folder → **Print folder…** → date range for one week →
+   **Content: Digest: only these sections** → Save PDF.
+2. Does the PDF show, for each meeting, just its Decisions and Action items (with any
+   sub-items), compactly, with no transcript? Are meetings without those sections left out,
+   with a notice saying how many?
+
 ## Full checklist
 
 | #   | Steps                                                                                                                                                                              | Expected                                                                                                                                                                                                                                                                        |
@@ -56,3 +64,4 @@ Use the plugin for a few real notes, then answer in plain words:
 | 12  | Record Obsidian, macOS and plugin versions with each result in `docs/VALIDATION.md`.                                                                                               | Done by Claude from Brian's reports.                                                                                                                                                                                                                                            |
 | 13  | Print and save a PDF of a multi-page note with **Header and footer** on, then off.                                                                                                 | On: header shows the location and last-modified time; footer shows the printed time and Page X of Y, on every page, in both outputs. Off: neither.                                                                                                                              |
 | 14  | Print a folder pack and a selection pack, as Print and as PDF, with cover and contents on. Try a date range, subfolders, manual reordering and one preset for all.                 | The right notes in the chosen order; each starts on a new page with its title, location and last-modified time; default sections per note (Transcript out); contents links jump in the PDF; links between pack notes jump; pack header and footer with continuous page numbers. |
+| 15  | Digest pack over a week of meetings, with the default list, then with a custom list (including `Transcript`).                                                                      | Only the listed sections (and subsections) per note; Transcript never appears; notes without matches are left out with a count; with no matches at all, nothing prints and a notice explains.                                                                                   |

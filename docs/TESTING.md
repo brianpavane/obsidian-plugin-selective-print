@@ -27,6 +27,7 @@ CI runs lint, typecheck, coverage and build on every push and pull request.
 | `starters.test.ts`      | Bundled starters validate and match; install and upgrade plan                                     |
 | `output.test.ts`        | Adapter registry, fallback, PDF adapter (vault, Desktop, Save panel, cancel, failures) with fakes |
 | `pack.test.ts`          | Pack dates, sorting, date filter, queries, reordering, labels; shared note defaults               |
+| `digest.test.ts`        | Digest section picking, exclusions winning, regex, empty results, settings parsing                |
 | `header-footer.test.ts` | Header and footer labels, escaping, margin boxes, PDF templates                                   |
 | `diagnostics.test.ts`   | Diagnostics report content (no note content)                                                      |
 | `settings.test.ts`      | Settings defaults and migration                                                                   |
