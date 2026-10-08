@@ -1,6 +1,6 @@
 # STATUS
 
-- Version: 0.6.0 Pass: 5 Milestone: M5 complete
+- Version: 0.6.1 Pass: 5 Milestone: M5 complete
 - Gate: E State: closed (2026-10-07): staying on 0.4.0, no 1.0.0 release
 
 ## Done
@@ -33,6 +33,9 @@ matcher keys are errors, duplicate preset names (first by path wins; built-in na
 reserved), preset fields fall back to settings, and the filename rules.
 
 ## Decisions made
+
+- 2026-10-07, Brian: meeting starters verified on real notes ("So far all good"). Shipped as
+  `starter-version: 2` with the verified marker (0.6.1).
 
 - 2026-10-07, Brian: 0.6.0 accepted ("This is working as it should be"). Keep "Each note on a
   new page" as an option, on by default.
@@ -136,7 +139,7 @@ reserved), preset fields fall back to settings, and the filename rules.
 - "Match theme" is experimental: Obsidian's own print CSS may interfere.
 - With the Neutral style, math (MathJax) may lose formatting, because its styles live in the
   Obsidian window.
-- Starter heading names come from the README, not real notes (Gate C item 2).
+- Tracker and weekly review starter headings are README-based (meeting starters verified).
 - "Remember" cannot store every selection exactly (a subheading kept under an excluded
   parent, duplicate heading names, the preamble). The user gets a notice when this happens.
 - Settings are not yet in Obsidian 1.13+ settings search (declarative settings API); see the

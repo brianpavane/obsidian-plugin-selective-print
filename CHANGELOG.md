@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-07
+
+### Changed
+
+- Meeting starters (Meeting notes, Meeting recap, Meeting full (with transcript)) are now
+  marked as verified against live notes (`starter-version: 2`). Unedited installed copies
+  update automatically; edited copies are left alone.
+
 ## [0.6.0] - 2026-10-07
 
 ### Added

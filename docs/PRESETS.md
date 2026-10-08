@@ -129,8 +129,9 @@ current choices:
 
 ## Starter presets
 
-On first run the plugin copies these starters into the presets folder. Their heading names
-come from the Meeting Notes plugin's README and have not yet been checked against real notes.
+On first run the plugin copies these starters into the presets folder. The three meeting
+starters were checked against real meeting notes (2026-10-07). The tracker and weekly review
+starters are minimal and only checked against the Meeting Notes plugin's README.
 
 | Starter                        | Applies to                   | Leaves out                                |
 | ------------------------------ | ---------------------------- | ----------------------------------------- |

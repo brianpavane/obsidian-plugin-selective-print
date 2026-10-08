@@ -1,7 +1,7 @@
 ---
 selective-print-preset: true
 preset-version: 1
-starter-version: 1
+starter-version: 2
 name: Meeting recap
 description: Summary, decisions and action items only. Pick it from the preset menu.
 sections:
@@ -11,7 +11,7 @@ sections:
 properties:
   mode: all
 ---
-<!-- verified against README, not against live notes -->
+<!-- verified against live notes by Brian, 2026-10-07 -->
 
 Starter preset installed by Selective Print. It leaves out Agenda and Notes (and the
 transcript, through the global exclude list), keeping Meeting Summary, Decisions and Action

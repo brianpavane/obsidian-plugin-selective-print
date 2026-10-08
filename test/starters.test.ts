@@ -38,7 +38,28 @@ describe("bundled starters", () => {
     for (const s of STARTERS) {
       const p = loaded.presets.find((x) => x.name === s.name);
       expect(p?.starterVersion).toBe(s.version);
-      expect(s.content).toContain("<!-- verified against README, not against live notes -->");
+      expect(s.content).toMatch(
+        /<!-- verified against (README, not against live notes|live notes by Brian, 2026-10-07) -->/,
+      );
+    }
+  });
+
+  it("meeting starters are verified against live notes (v2) and upgrade unmodified v1 copies", () => {
+    for (const name of ["Meeting notes", "Meeting recap", "Meeting full (with transcript)"]) {
+      const s = STARTERS.find((x) => x.name === name);
+      expect(s?.version).toBe(2);
+      expect(s?.content).toContain("<!-- verified against live notes by Brian, 2026-10-07 -->");
+      expect(s?.shippedHashes).toHaveLength(2);
+      const v1 = s?.content
+        .replace("starter-version: 2", "starter-version: 1")
+        .replace(
+          "<!-- verified against live notes by Brian, 2026-10-07 -->",
+          "<!-- verified against README, not against live notes -->",
+        );
+      expect(s?.shippedHashes[0]).toBe(starterHash(v1 ?? ""));
+    }
+    for (const name of ["Meeting tracker", "Weekly review"]) {
+      expect(STARTERS.find((x) => x.name === name)?.content).toContain("verified against README");
     }
   });
 
