@@ -19,10 +19,14 @@ All notable changes to this project are documented here. The format follows
 - **Weekly review** (starter v2) now applies to notes with `type: weekly-review`, wherever they
   are. Before, it only matched a `Weekly Reviews` folder at the top of the vault, so reviews in
   the meeting-notes folder or the Meeting Hub were missed.
+- **Meeting notes no longer print their properties by default.** The three meeting starters
+  (v3) set **Include properties** to None. To print them for one printout, choose All or
+  Choose… in the print dialog; to print them every time, set `properties: mode: all` in the
+  preset file. Quick print and packs follow the same default. Other notes are unchanged.
 - **Digest sections** default: Decisions, Action items, Key Decisions, Next Steps. If you never
   changed the list, it updates automatically; an edited list is left alone.
 
-Unedited copies of the two starters update automatically; edited copies are left alone.
+Unedited copies of the starters update automatically; edited copies are left alone.
 
 ## [0.7.0] - 2026-10-07
 

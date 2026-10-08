@@ -18,6 +18,7 @@ import {
   starterHash,
   type StarterDef,
 } from "../src/core/starters-plan";
+import { defaultJobForNote } from "../src/core/note-job";
 import { STARTERS } from "../src/starters";
 import { loadFixture } from "./helpers";
 
@@ -44,23 +45,43 @@ describe("bundled starters", () => {
     }
   });
 
-  it("meeting starters are verified against live notes (v2) and upgrade unmodified v1 copies", () => {
+  it("meeting notes and full are v3 (properties off) and upgrade unmodified v1 and v2 copies", () => {
+    expect(STARTERS.find((x) => x.name === "Meeting notes")).toMatchObject({
+      version: 3,
+      shippedHashes: ["f97954e4", "f6343d4e", expect.any(String)],
+    });
+    expect(STARTERS.find((x) => x.name === "Meeting full (with transcript)")).toMatchObject({
+      version: 3,
+      shippedHashes: ["60985100", "9c44a172", expect.any(String)],
+    });
     for (const name of ["Meeting notes", "Meeting full (with transcript)"]) {
-      const s = STARTERS.find((x) => x.name === name);
-      expect(s?.version).toBe(2);
-      expect(s?.content).toContain("<!-- verified against live notes by Brian, 2026-10-07 -->");
-      expect(s?.shippedHashes).toHaveLength(2);
-      const v1 = s?.content
-        .replace("starter-version: 2", "starter-version: 1")
-        .replace(
-          "<!-- verified against live notes by Brian, 2026-10-07 -->",
-          "<!-- verified against README, not against live notes -->",
-        );
-      expect(s?.shippedHashes[0]).toBe(starterHash(v1 ?? ""));
+      expect(STARTERS.find((x) => x.name === name)?.content).toContain(
+        "<!-- verified against live notes by Brian, 2026-10-07 -->",
+      );
     }
     expect(STARTERS.find((x) => x.name === "Meeting tracker")?.content).toContain(
       "verified against README",
     );
+  });
+
+  it("no meeting starter prints the note's properties by default", () => {
+    for (const name of ["Meeting notes", "Meeting recap", "Meeting full (with transcript)"]) {
+      expect(loaded.presets.find((p) => p.name === name)?.properties.mode).toBe("none");
+    }
+    const r = defaultJobForNote({
+      tree: parseSections(loadFixture("meeting-new-format.md")),
+      note: {
+        path: "M.md",
+        title: "M",
+        properties: { type: "meeting", tags: ["meeting"] },
+        tags: ["meeting"],
+      },
+      presets: loaded.presets,
+      globalExclude: ["Transcript"],
+      settingsSkipEmpty: true,
+    });
+    expect(r.preset.name).toBe("Meeting notes");
+    expect(r.job.properties).toEqual([]);
   });
 
   it("recap v3 and weekly review v2 upgrade unmodified older copies", () => {

@@ -10,7 +10,7 @@ sections:
     - 'regex:^(agenda|notes|summary by topic|summary \(by topic\)|speakers)$'
   skip-empty: true
 properties:
-  mode: all
+  mode: none # the note's properties are not printed; switch on in the dialog
 ---
 <!-- verified against the Meeting Notes plugin's note layout (6.20.1), 2026-10-08; v2 verified against live notes by Brian, 2026-10-07 -->
 
@@ -18,8 +18,8 @@ Starter preset installed by Selective Print. It works with both meeting note lay
 
 - Kept: Executive Summary (or Meeting Summary), Next Steps (or Action items), Key Decisions
   (or Decisions) and Additional Items.
-- Left out: Agenda, Notes, Summary by Topic, Speakers, and the transcript (through the global
-  exclude list).
+- Left out: properties, Agenda, Notes, Summary by Topic, Speakers, and the transcript
+  (through the global exclude list).
 
 The left-out headings are one `regex:` entry so that a note with only some of them (an older
 note has no Summary by Topic or Speakers) shows no "not found" warning.

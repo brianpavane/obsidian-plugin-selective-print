@@ -1,14 +1,14 @@
 ---
 selective-print-preset: true
 preset-version: 1
-starter-version: 2
+starter-version: 3
 name: Meeting full (with transcript)
-description: The whole meeting note, transcript included. Pick it from the preset menu.
+description: The whole meeting note, transcript included (properties off). Pick it from the preset menu.
 sections:
   inherit-global: false
   exclude: []
 properties:
-  mode: all
+  mode: none # the note's properties are not printed; switch on in the dialog
 ---
 <!-- verified against live notes by Brian, 2026-10-07 -->
 

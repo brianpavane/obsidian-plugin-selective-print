@@ -45,8 +45,10 @@ Use the plugin for a few real notes, then answer in plain words:
    Items. Unchecked: Agenda, Notes, Summary by Topic, Speakers, Transcript. No "not found"
    warning.
 2. The same on an older meeting note: kept Meeting Summary, Decisions, Action items.
-3. Open the dialog on a weekly review: is **Weekly review** selected?
-4. A digest pack over a week with old and new notes: each shows its decisions and next steps
+3. Print any meeting note: **Include properties** shows None and the printout has no
+   properties block at the top. Set it to All: the properties come back.
+4. Open the dialog on a weekly review: is **Weekly review** selected?
+5. A digest pack over a week with old and new notes: each shows its decisions and next steps
    (or action items).
 
 ## Quick try-list (0.7.0: digest packs)

@@ -147,13 +147,13 @@ Meeting notes come in two layouts, and every meeting starter handles both:
 Agenda, Notes and Transcript are in both. An older note that got an AI reply later can have
 some of each.
 
-| Starter                        | Applies to                   | Leaves out                                                            |
-| ------------------------------ | ---------------------------- | --------------------------------------------------------------------- |
-| Meeting notes                  | `type: meeting`              | Transcript (global list), empty sections                              |
-| Meeting recap                  | (pick it by hand)            | Transcript, Agenda, Notes, Summary by Topic, Speakers, empty sections |
-| Meeting full (with transcript) | (pick it by hand)            | nothing (`inherit-global: false`)                                     |
-| Meeting tracker                | file name `Meeting Tracker*` | Transcript (global list)                                              |
-| Weekly review                  | `type: weekly-review`        | Transcript (global list)                                              |
+| Starter                        | Applies to                   | Leaves out                                                                        |
+| ------------------------------ | ---------------------------- | --------------------------------------------------------------------------------- |
+| Meeting notes                  | `type: meeting`              | Properties, Transcript (global list), empty sections                              |
+| Meeting recap                  | (pick it by hand)            | Properties, Transcript, Agenda, Notes, Summary by Topic, Speakers, empty sections |
+| Meeting full (with transcript) | (pick it by hand)            | Properties only (`inherit-global: false`)                                         |
+| Meeting tracker                | file name `Meeting Tracker*` | Transcript (global list)                                                          |
+| Weekly review                  | `type: weekly-review`        | Transcript (global list)                                                          |
 
 **Upgrades:** a plugin update adds new starters and updates starters you have not edited.
 

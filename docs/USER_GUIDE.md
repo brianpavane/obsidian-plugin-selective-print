@@ -30,7 +30,8 @@ The review dialog opens. Adjust it if needed and click **Print**.
   - The number on the right is the section's size, so long transcripts stand out.
 - **Select all / Select none / Reset / Invert:** quick changes. **Reset** returns to the defaults.
 - **Include note title**, **Include properties** (None, All, or Choose… to pick properties) and
-  **Skip empty sections**.
+  **Skip empty sections**. Meeting notes start with **Include properties: None**, so the
+  properties block at the top of the note is not printed; pick All or Choose… to print it.
 - **Preset:** presets that match this note come first, with the most specific selected.
   Then come your other presets, **Default** (global exclude list) and **Everything** (all
   sections). Switching presets resets the checklist to that preset's defaults. See
